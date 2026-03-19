@@ -1,11 +1,58 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.37111.16 d17.14
+VisualStudioVersion = 17.14.37111.16
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IcMarkets.BlockchainHistory.Domain", "src\IcMarkets.BlockchainHistory.Domain\IcMarkets.BlockchainHistory.Domain.csproj", "{C077FBF8-3860-4522-86FC-DCA8BD327838}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IcMarkets.BlockchainHistory.Infrastructure", "src\IcMarkets.BlockchainHistory.Infrastructure\IcMarkets.BlockchainHistory.Infrastructure.csproj", "{59C719CA-32EB-4B24-8EA0-1C6B779ACB22}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IcMarkets.BlockchainHistory.Application", "src\IcMarkets.BlockchainHistory.Application\IcMarkets.BlockchainHistory.Application.csproj", "{9696C097-2BF7-4D13-8752-EA003A79EAE5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{86CADABB-272B-4634-9602-8E592B2257F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IcMarkets.BlockchainHistory.UnitTests", "tests\IcMarkets.BlockchainHistory.UnitTests\IcMarkets.BlockchainHistory.UnitTests.csproj", "{C12ED74B-8BC2-474A-A55D-2141427C1D26}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IcMarkets.BlockchainHistory.Api", "src\IcMarkets.BlockchainHistory.Api\IcMarkets.BlockchainHistory.Api.csproj", "{F3E01035-B99F-4F83-A291-A2976C9C27B6}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C077FBF8-3860-4522-86FC-DCA8BD327838}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C077FBF8-3860-4522-86FC-DCA8BD327838}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C077FBF8-3860-4522-86FC-DCA8BD327838}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C077FBF8-3860-4522-86FC-DCA8BD327838}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59C719CA-32EB-4B24-8EA0-1C6B779ACB22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59C719CA-32EB-4B24-8EA0-1C6B779ACB22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59C719CA-32EB-4B24-8EA0-1C6B779ACB22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59C719CA-32EB-4B24-8EA0-1C6B779ACB22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9696C097-2BF7-4D13-8752-EA003A79EAE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9696C097-2BF7-4D13-8752-EA003A79EAE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9696C097-2BF7-4D13-8752-EA003A79EAE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9696C097-2BF7-4D13-8752-EA003A79EAE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C12ED74B-8BC2-474A-A55D-2141427C1D26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C12ED74B-8BC2-474A-A55D-2141427C1D26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C12ED74B-8BC2-474A-A55D-2141427C1D26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C12ED74B-8BC2-474A-A55D-2141427C1D26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3E01035-B99F-4F83-A291-A2976C9C27B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3E01035-B99F-4F83-A291-A2976C9C27B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3E01035-B99F-4F83-A291-A2976C9C27B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3E01035-B99F-4F83-A291-A2976C9C27B6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C077FBF8-3860-4522-86FC-DCA8BD327838} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{59C719CA-32EB-4B24-8EA0-1C6B779ACB22} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{9696C097-2BF7-4D13-8752-EA003A79EAE5} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{C12ED74B-8BC2-474A-A55D-2141427C1D26} = {86CADABB-272B-4634-9602-8E592B2257F1}
+		{F3E01035-B99F-4F83-A291-A2976C9C27B6} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {121CE8FA-BCE0-46A0-8E31-6CA5683CE45F}

@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="NewFolder\**" />
+    <EmbeddedResource Remove="NewFolder\**" />
+    <None Remove="NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IcMarkets.BlockchainHistory.Application\IcMarkets.BlockchainHistory.Application.csproj" />
+    <ProjectReference Include="..\IcMarkets.BlockchainHistory.Domain\IcMarkets.BlockchainHistory.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

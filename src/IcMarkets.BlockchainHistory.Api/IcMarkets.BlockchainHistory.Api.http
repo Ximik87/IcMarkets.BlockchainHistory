@@ -1,0 +1,6 @@
+@IcMarkets.BlockchainHistory.Api_HostAddress = http://localhost:5190
+
+GET {{IcMarkets.BlockchainHistory.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
