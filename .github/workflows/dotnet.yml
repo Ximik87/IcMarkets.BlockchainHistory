@@ -25,4 +25,4 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal .\tests\IcMarkets.BlockchainHistory.UnitTests\IcMarkets.BlockchainHistory.UnitTests.csproj
+      run: dotnet test --no-build --verbosity normal ./tests/IcMarkets.BlockchainHistory.UnitTests/IcMarkets.BlockchainHistory.UnitTests.csproj
