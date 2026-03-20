@@ -5,9 +5,9 @@ name: .NET
 
 on:
   push:
-    branches: [ "development" ]
+    branches: [ "development", "main" ]
   pull_request:
-    branches: [ "development" ]
+    branches: [ "development", "main" ]
 
 jobs:
   build:
@@ -25,4 +25,4 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal .\tests\IcMarkets.BlockchainHistory.UnitTests\IcMarkets.BlockchainHistory.UnitTests.csproj
