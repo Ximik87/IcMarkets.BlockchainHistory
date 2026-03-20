@@ -6,9 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Abstractions\External\" />
     <Folder Include="Common\" />
-    <Folder Include="DTOs\" />
   </ItemGroup>
 
   <ItemGroup>

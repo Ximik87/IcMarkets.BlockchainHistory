@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
-using IcMarkets.BlockchainHistory.Application.Abstractions.Persistence;
+﻿using System.Net.Http.Json;
+using IcMarkets.BlockchainHistory.Application.Abstractions.External;
+using IcMarkets.BlockchainHistory.Application.DTOs;
 
 namespace IcMarkets.BlockchainHistory.Infrastructure.External;
 
@@ -17,17 +13,33 @@ internal sealed class BlockCypherClient : IBlockCypherClient
         _factory = factory;
     }
 
-    public async Task Get()
+    public async Task<Blockchain> Get()
     {
-        using var client = _factory.CreateClient("BlockCypher");
+        using var client = _factory.CreateClient();
         var response =
-            await client.GetFromJsonAsync<Blockchain>("https://api.blockcypher.com/v1/btc/main");
+            await client.GetFromJsonAsync<BlockchainResponse>("https://api.blockcypher.com/v1/btc/main");
 
-        Console.WriteLine(response?.name);
+        return new Blockchain
+        {
+            Name = response?.name ?? string.Empty,
+            Height = response?.height ?? 0,
+            Hash = response?.hash ?? string.Empty,
+            Time = response?.time ?? string.Empty,
+            LatestUrl = response?.latest_url ?? string.Empty,
+            PreviousHash = response?.previous_hash ?? string.Empty,
+            PreviousUrl = response?.previous_url ?? string.Empty,
+            PeerCount = response?.peer_count ?? 0,
+            UnconfirmedCount = response?.unconfirmed_count ?? 0,
+            HighFeePerKb = response?.high_fee_per_kb ?? 0,
+            MediumFeePerKb = response?.medium_fee_per_kb ?? 0,
+            LowFeePerKb = response?.low_fee_per_kb ?? 0,
+            LastForkHeight = response?.last_fork_height ?? 0,
+            LastForkHash = response?.last_fork_hash ?? string.Empty
+        };
     }
 }
 
-public class Blockchain
+internal class BlockchainResponse
 {
     public string name { get; set; }
     public int height { get; set; }

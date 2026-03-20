@@ -1,4 +1,4 @@
-﻿namespace IcMarkets.BlockchainHistory.Infrastructure;
+﻿namespace IcMarkets.BlockchainHistory.Infrastructure.External;
 
 
 public class BlockCypherOptions
