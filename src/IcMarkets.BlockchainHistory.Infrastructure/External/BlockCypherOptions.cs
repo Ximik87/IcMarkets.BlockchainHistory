@@ -1,6 +1,5 @@
 ﻿namespace IcMarkets.BlockchainHistory.Infrastructure.External;
 
-
 public class BlockCypherOptions
 {
     public string EthMainUrl { get; set; } = default!;

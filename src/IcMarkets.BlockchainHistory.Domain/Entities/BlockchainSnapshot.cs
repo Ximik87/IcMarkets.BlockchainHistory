@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using IcMarkets.BlockchainHistory.Domain.Enums;
+﻿using IcMarkets.BlockchainHistory.Domain.Enums;
 
 namespace IcMarkets.BlockchainHistory.Domain.Entities;
 
@@ -18,4 +15,29 @@ public sealed class BlockchainSnapshot
     public string? Hash { get; private set; }
     public int? PeerCount { get; private set; }
     public int? UnconfirmedCount { get; private set; }
+
+    private BlockchainSnapshot() { }
+
+    public static BlockchainSnapshot Create(
+        BlockchainType blockchainType,
+        string sourceUrl,
+        string rawJson,
+        long? height,
+        string? hash,
+        int? peerCount,
+        int? unconfirmedCount)
+    {
+        return new BlockchainSnapshot
+        {
+            Id = Guid.NewGuid(),
+            BlockchainType = blockchainType,
+            SourceUrl = sourceUrl,
+            RawJson = rawJson,
+            CreatedAt = DateTimeOffset.UtcNow,
+            Height = height,
+            Hash = hash,
+            PeerCount = peerCount,
+            UnconfirmedCount = unconfirmedCount
+        };
+    }
 }

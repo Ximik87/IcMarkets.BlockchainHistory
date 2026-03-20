@@ -1,25 +1,37 @@
 ﻿using System.Net.Http.Json;
 using IcMarkets.BlockchainHistory.Application.Abstractions.External;
 using IcMarkets.BlockchainHistory.Application.DTOs;
+using IcMarkets.BlockchainHistory.Domain.Enums;
+using Microsoft.Extensions.Options;
 
 namespace IcMarkets.BlockchainHistory.Infrastructure.External;
 
 internal sealed class BlockCypherClient : IBlockCypherClient
 {
     private readonly IHttpClientFactory _factory;
+    private readonly BlockCypherOptions _options;
 
-    public BlockCypherClient(IHttpClientFactory factory)
+    public BlockCypherClient(IHttpClientFactory factory, IOptions<BlockCypherOptions> options)
     {
         _factory = factory;
+        _options = options.Value;
     }
 
     public async Task<Blockchain> Get()
     {
-        using var client = _factory.CreateClient();
-        var response =
-            await client.GetFromJsonAsync<BlockchainResponse>("https://api.blockcypher.com/v1/btc/main");
+        var (data, _) = await GetAsync(BlockchainType.BitcoinMain);
+        return data;
+    }
 
-        return new Blockchain
+    public async Task<(Blockchain Data, string SourceUrl)> GetAsync(
+        BlockchainType blockchainType,
+        CancellationToken ct = default)
+    {
+        var url = GetUrl(blockchainType);
+        using var client = _factory.CreateClient();
+        var response = await client.GetFromJsonAsync<BlockchainResponse>(url, ct);
+
+        var blockchain = new Blockchain
         {
             Name = response?.name ?? string.Empty,
             Height = response?.height ?? 0,
@@ -36,7 +48,19 @@ internal sealed class BlockCypherClient : IBlockCypherClient
             LastForkHeight = response?.last_fork_height ?? 0,
             LastForkHash = response?.last_fork_hash ?? string.Empty
         };
+
+        return (blockchain, url);
     }
+
+    private string GetUrl(BlockchainType blockchainType) => blockchainType switch
+    {
+        BlockchainType.Ethereum => _options.EthMainUrl,
+        BlockchainType.Dash => _options.DashMainUrl,
+        BlockchainType.BitcoinMain => _options.BtcMainUrl,
+        BlockchainType.BitcoinTest3 => _options.BtcTest3Url,
+        BlockchainType.Litecoin => _options.LtcMainUrl,
+        _ => throw new ArgumentOutOfRangeException(nameof(blockchainType), blockchainType, null)
+    };
 }
 
 internal class BlockchainResponse

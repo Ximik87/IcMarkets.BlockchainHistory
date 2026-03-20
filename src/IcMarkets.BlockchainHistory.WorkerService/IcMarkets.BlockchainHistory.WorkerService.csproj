@@ -13,4 +13,10 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IcMarkets.BlockchainHistory.Application\IcMarkets.BlockchainHistory.Application.csproj" />
+    <ProjectReference Include="..\IcMarkets.BlockchainHistory.Domain\IcMarkets.BlockchainHistory.Domain.csproj" />
+    <ProjectReference Include="..\IcMarkets.BlockchainHistory.Infrastructure\IcMarkets.BlockchainHistory.Infrastructure.csproj" />
+  </ItemGroup>
 </Project>

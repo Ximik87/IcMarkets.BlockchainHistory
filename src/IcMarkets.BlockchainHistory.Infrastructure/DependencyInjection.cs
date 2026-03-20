@@ -1,4 +1,6 @@
+using IcMarkets.BlockchainHistory.Application.Abstractions.External;
 using IcMarkets.BlockchainHistory.Application.Abstractions.Persistence;
+using IcMarkets.BlockchainHistory.Infrastructure.External;
 using IcMarkets.BlockchainHistory.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +20,9 @@ public static class DependencyInjection
         services.AddScoped<IBlockchainSnapshotRepository, BlockchainSnapshotRepository>();
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<AppDbContext>());
 
+        services.Configure<BlockCypherOptions>(configuration.GetSection("BlockCypher"));
         services.AddHttpClient();
+        services.AddScoped<IBlockCypherClient, BlockCypherClient>();
 
         return services;
     }
