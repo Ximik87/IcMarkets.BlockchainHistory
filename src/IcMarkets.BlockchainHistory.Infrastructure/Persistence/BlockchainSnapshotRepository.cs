@@ -1,28 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using IcMarkets.BlockchainHistory.Application.Abstractions.Persistence;
+﻿using IcMarkets.BlockchainHistory.Application.Abstractions.Persistence;
 using IcMarkets.BlockchainHistory.Domain.Entities;
 using IcMarkets.BlockchainHistory.Domain.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace IcMarkets.BlockchainHistory.Infrastructure.Persistence;
 
 internal sealed class BlockchainSnapshotRepository : IBlockchainSnapshotRepository
 {
-    public Task AddAsync(BlockchainSnapshot entity, CancellationToken ct)
+    private readonly AppDbContext _dbContext;
+
+    public BlockchainSnapshotRepository(AppDbContext dbContext)
     {
-        throw new NotImplementedException();
+        _dbContext = dbContext;
     }
 
-    public Task<IReadOnlyList<BlockchainSnapshot>> GetHistoryAsync(BlockchainType blockchainType, CancellationToken ct)
+    public async Task AddAsync(BlockchainSnapshot entity, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        await _dbContext.BlockchainSnapshots.AddAsync(entity, ct);
     }
 
-    public Task<BlockchainSnapshot?> GetLatestAsync(BlockchainType blockchainType, CancellationToken ct)
+    public async Task<IReadOnlyList<BlockchainSnapshot>> GetHistoryAsync(
+        BlockchainType blockchainType,
+        CancellationToken ct)
     {
-        throw new NotImplementedException();
+        return await _dbContext.BlockchainSnapshots
+            .Where(s => s.BlockchainType == blockchainType)
+            .OrderByDescending(s => s.CreatedAt)
+            .AsNoTracking()
+            .ToListAsync(ct);
+    }
+
+    public async Task<BlockchainSnapshot?> GetLatestAsync(
+        BlockchainType blockchainType,
+        CancellationToken ct)
+    {
+        return await _dbContext.BlockchainSnapshots
+            .Where(s => s.BlockchainType == blockchainType)
+            .OrderByDescending(s => s.CreatedAt)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(ct);
     }
 }
