@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-IcMarkets.BlockchainHistory.WorkerService-b09db80d-96a6-4f6c-94ec-9ce3b7287d2c</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IcMarkets.BlockchainHistory.Application\IcMarkets.BlockchainHistory.Application.csproj" />
+    <ProjectReference Include="..\IcMarkets.BlockchainHistory.Domain\IcMarkets.BlockchainHistory.Domain.csproj" />
+    <ProjectReference Include="..\IcMarkets.BlockchainHistory.Infrastructure\IcMarkets.BlockchainHistory.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>
