@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IcMarkets.BlockchainHistory
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IcMarkets.BlockchainHistory.WorkerService", "src\IcMarkets.BlockchainHistory.WorkerService\IcMarkets.BlockchainHistory.WorkerService.csproj", "{4776D00F-935E-40F0-954A-DCD7381C0B3E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IcMarkets.BlockchainHistory.FuncTests", "tests\IcMarkets.BlockchainHistory.FuncTests\IcMarkets.BlockchainHistory.FuncTests.csproj", "{9D0A8D9C-A76D-4A60-A267-91F4C80A2F1B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,10 @@ Global
 		{4776D00F-935E-40F0-954A-DCD7381C0B3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4776D00F-935E-40F0-954A-DCD7381C0B3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4776D00F-935E-40F0-954A-DCD7381C0B3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D0A8D9C-A76D-4A60-A267-91F4C80A2F1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D0A8D9C-A76D-4A60-A267-91F4C80A2F1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D0A8D9C-A76D-4A60-A267-91F4C80A2F1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D0A8D9C-A76D-4A60-A267-91F4C80A2F1B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,6 +79,7 @@ Global
 		{F3E01035-B99F-4F83-A291-A2976C9C27B6} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{8EBC7805-F906-445A-97BD-9E15082F8CDF} = {86CADABB-272B-4634-9602-8E592B2257F1}
 		{4776D00F-935E-40F0-954A-DCD7381C0B3E} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{9D0A8D9C-A76D-4A60-A267-91F4C80A2F1B} = {86CADABB-272B-4634-9602-8E592B2257F1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {121CE8FA-BCE0-46A0-8E31-6CA5683CE45F}
