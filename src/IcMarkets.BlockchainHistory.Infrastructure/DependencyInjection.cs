@@ -23,6 +23,7 @@ public static class DependencyInjection
         services.Configure<BlockCypherOptions>(configuration.GetSection("BlockCypher"));
         services.AddHttpClient();
         services.AddScoped<IBlockCypherClient, BlockCypherClient>();
+        services.AddMediator(opt => opt.ServiceLifetime = ServiceLifetime.Scoped);
 
         return services;
     }
