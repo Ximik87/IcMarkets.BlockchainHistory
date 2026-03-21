@@ -17,15 +17,7 @@ internal sealed class BlockCypherClient : IBlockCypherClient
         _options = options.Value;
     }
 
-    public async Task<Blockchain> Get()
-    {
-        var (data, _) = await GetAsync(BlockchainType.BitcoinMain);
-        return data;
-    }
-
-    public async Task<(Blockchain Data, string SourceUrl)> GetAsync(
-        BlockchainType blockchainType,
-        CancellationToken ct = default)
+    public async Task<Blockchain> GetAsync(BlockchainType blockchainType, CancellationToken ct)
     {
         var url = GetUrl(blockchainType);
         using var client = _factory.CreateClient();
@@ -49,9 +41,9 @@ internal sealed class BlockCypherClient : IBlockCypherClient
             LastForkHash = response?.last_fork_hash ?? string.Empty
         };
 
-        return (blockchain, url);
+        return blockchain;
     }
-
+  
     private string GetUrl(BlockchainType blockchainType) => blockchainType switch
     {
         BlockchainType.Ethereum => _options.EthMainUrl,

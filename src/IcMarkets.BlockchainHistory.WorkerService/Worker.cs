@@ -8,9 +8,8 @@ namespace IcMarkets.BlockchainHistory.WorkerService;
 
 public class Worker : BackgroundService
 {
-    private static readonly BlockchainType[] AllBlockchainTypes = Enum.GetValues<BlockchainType>();
-    private static readonly TimeSpan PollingInterval = TimeSpan.FromMinutes(1);
-
+    private readonly BlockchainType[] _allBlockchainTypes = Enum.GetValues<BlockchainType>();
+    private readonly TimeSpan _pollingInterval = TimeSpan.FromMinutes(1);
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<Worker> _logger;
 
@@ -35,7 +34,7 @@ public class Worker : BackgroundService
                 _logger.LogError(ex, "Error during blockchain data polling");
             }
 
-            await Task.Delay(PollingInterval, stoppingToken);
+            await Task.Delay(_pollingInterval, stoppingToken);
         }
     }
 
@@ -46,16 +45,16 @@ public class Worker : BackgroundService
         var repository = scope.ServiceProvider.GetRequiredService<IBlockchainSnapshotRepository>();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-        foreach (var blockchainType in AllBlockchainTypes)
+        foreach (var blockchainType in _allBlockchainTypes)
         {
             try
             {
-                var (data, sourceUrl) = await client.GetAsync(blockchainType, ct);
+                var data = await client.GetAsync(blockchainType, ct);
                 var rawJson = JsonSerializer.Serialize(data);
 
                 var snapshot = BlockchainSnapshot.Create(
                     blockchainType,
-                    sourceUrl,
+                    string.Empty,
                     rawJson,
                     data.Height,
                     data.Hash,

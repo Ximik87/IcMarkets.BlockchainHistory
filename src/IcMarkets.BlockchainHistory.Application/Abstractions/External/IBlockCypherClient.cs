@@ -5,6 +5,5 @@ namespace IcMarkets.BlockchainHistory.Application.Abstractions.External;
 
 public interface IBlockCypherClient
 {
-    Task<Blockchain> Get();
-    Task<(Blockchain Data, string SourceUrl)> GetAsync(BlockchainType blockchainType, CancellationToken ct = default);
+    Task<Blockchain> GetAsync(BlockchainType blockchainType, CancellationToken ct);    
 }
