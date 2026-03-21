@@ -27,4 +27,4 @@ jobs:
     - name: Unit Test
       run: dotnet test --no-build --verbosity normal ./tests/IcMarkets.BlockchainHistory.UnitTests/IcMarkets.BlockchainHistory.UnitTests.csproj
     - name: Func Test
-      run: dotnet test --no-build --verbosity normal ./tests\IcMarkets.BlockchainHistory.FuncTests/IcMarkets.BlockchainHistory.FuncTests.csproj
+      run: dotnet test --no-build --verbosity normal ./tests/IcMarkets.BlockchainHistory.FuncTests/IcMarkets.BlockchainHistory.FuncTests.csproj
