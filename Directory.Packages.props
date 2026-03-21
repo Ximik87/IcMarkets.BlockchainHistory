@@ -16,5 +16,7 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
     <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageVersion Include="Mediator.Abstractions" Version="3.0.1" />
+    <PackageVersion Include="Mediator.SourceGenerator" Version="3.0.1" />
   </ItemGroup>
 </Project>

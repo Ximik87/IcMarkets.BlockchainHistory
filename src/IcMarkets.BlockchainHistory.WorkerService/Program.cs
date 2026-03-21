@@ -10,6 +10,7 @@ public class Program
 
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddHostedService<Worker>();
+        builder.Services.AddMediator();
 
         var host = builder.Build();
 

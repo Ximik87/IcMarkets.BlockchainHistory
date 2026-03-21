@@ -1,8 +1,10 @@
 using System.Text.Json;
 using IcMarkets.BlockchainHistory.Application.Abstractions.External;
 using IcMarkets.BlockchainHistory.Application.Abstractions.Persistence;
+using IcMarkets.BlockchainHistory.Application.Features;
 using IcMarkets.BlockchainHistory.Domain.Entities;
 using IcMarkets.BlockchainHistory.Domain.Enums;
+using Mediator;
 
 namespace IcMarkets.BlockchainHistory.WorkerService;
 
@@ -44,7 +46,7 @@ public class Worker : BackgroundService
         var client = scope.ServiceProvider.GetRequiredService<IBlockCypherClient>();
         var repository = scope.ServiceProvider.GetRequiredService<IBlockchainSnapshotRepository>();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-
+       
         foreach (var blockchainType in _allBlockchainTypes)
         {
             try
