@@ -1,12 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using IcMarkets.BlockchainHistory.Application.Abstractions.Persistence;
+using IcMarkets.BlockchainHistory.Application.DTOs;
+using Mediator;
 
-namespace IcMarkets.BlockchainHistory.Application.Features.Blockchain.Queries.GetBlockchainHistory
+namespace IcMarkets.BlockchainHistory.Application.Features.Blockchain.Queries.GetBlockchainHistory;
+
+public sealed class GetBlockchainHistoryQueryHandler
+    : IQueryHandler<GetBlockchainHistoryQuery, IReadOnlyList<BlockchainSnapshotResponse>>
 {
-    internal class GetBlockchainHistoryQueryHandler
+    private readonly IBlockchainSnapshotRepository _repository;
+
+    public GetBlockchainHistoryQueryHandler(IBlockchainSnapshotRepository repository)
     {
+        _repository = repository;
+    }
+
+    public async ValueTask<IReadOnlyList<BlockchainSnapshotResponse>> Handle(
+        GetBlockchainHistoryQuery query,
+        CancellationToken cancellationToken)
+    {
+        var snapshots = await _repository.GetHistoryAsync(query.BlockchainType, cancellationToken);
+
+        return snapshots.Select(s => new BlockchainSnapshotResponse
+        {
+            Id = s.Id,
+            BlockchainType = s.BlockchainType.ToString(),
+            SourceUrl = s.SourceUrl,
+            RawJson = s.RawJson,
+            CreatedAt = s.CreatedAt,
+            Height = s.Height,
+            Hash = s.Hash,
+            PeerCount = s.PeerCount,
+            UnconfirmedCount = s.UnconfirmedCount
+        }).ToList();
     }
 }

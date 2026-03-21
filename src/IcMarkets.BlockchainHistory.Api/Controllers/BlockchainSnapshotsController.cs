@@ -1,6 +1,8 @@
 using IcMarkets.BlockchainHistory.Application.Abstractions.Persistence;
 using IcMarkets.BlockchainHistory.Application.DTOs;
+using IcMarkets.BlockchainHistory.Application.Features.Blockchain.Queries.GetBlockchainHistory;
 using IcMarkets.BlockchainHistory.Domain.Enums;
+using Mediator;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IcMarkets.BlockchainHistory.Api.Controllers;
@@ -10,10 +12,14 @@ namespace IcMarkets.BlockchainHistory.Api.Controllers;
 public sealed class BlockchainSnapshotsController : ControllerBase
 {
     private readonly IBlockchainSnapshotRepository _repository;
+    private readonly IMediator _mediator;
 
-    public BlockchainSnapshotsController(IBlockchainSnapshotRepository repository)
+    public BlockchainSnapshotsController(
+        IBlockchainSnapshotRepository repository,
+        IMediator mediator)
     {
         _repository = repository;
+        _mediator = mediator;
     }
 
     /// <summary>
@@ -32,20 +38,7 @@ public sealed class BlockchainSnapshotsController : ControllerBase
                               $"Valid values: {string.Join(", ", Enum.GetNames<BlockchainType>())}");
         }
 
-        var snapshots = await _repository.GetHistoryAsync(parsed, ct);
-
-        var response = snapshots.Select(s => new BlockchainSnapshotResponse
-        {
-            Id = s.Id,
-            BlockchainType = s.BlockchainType.ToString(),
-            SourceUrl = s.SourceUrl,
-            RawJson = s.RawJson,
-            CreatedAt = s.CreatedAt,
-            Height = s.Height,
-            Hash = s.Hash,
-            PeerCount = s.PeerCount,
-            UnconfirmedCount = s.UnconfirmedCount
-        }).ToList();
+        var response = await _mediator.Send(new GetBlockchainHistoryQuery(parsed), ct);
 
         return Ok(response);
     }
