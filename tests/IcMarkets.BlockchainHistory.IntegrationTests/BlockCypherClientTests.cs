@@ -2,6 +2,7 @@ using IcMarkets.BlockchainHistory.Domain.Enums;
 using IcMarkets.BlockchainHistory.Infrastructure.External;
 using Microsoft.Extensions.Options;
 using Moq;
+using Shouldly;
 
 namespace IcMarkets.BlockchainHistory.IntegrationTests;
 
@@ -27,7 +28,10 @@ public sealed class BlockCypherClientTests
         // Act
         var result = await sut.GetAsync(BlockchainType.BitcoinMain, CancellationToken.None);
 
-        // Assert
-        Assert.NotNull(result);
+        // Assert      
+        result.ShouldNotBeNull();
+        result.Name.ShouldBe("BTC.main");
+        result.PeerCount.ShouldBeGreaterThan(0);
+        result.Height.ShouldBeGreaterThan(0);
     }
 }
