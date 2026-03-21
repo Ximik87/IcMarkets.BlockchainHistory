@@ -10,7 +10,7 @@ public class Program
 
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddHostedService<Worker>();
-        builder.Services.AddMediator();
+        builder.Services.AddMediator(opt => opt.ServiceLifetime = ServiceLifetime.Scoped);
 
         var host = builder.Build();
 

@@ -1,8 +1,4 @@
-using System.Text.Json;
-using IcMarkets.BlockchainHistory.Application.Abstractions.External;
-using IcMarkets.BlockchainHistory.Application.Abstractions.Persistence;
-using IcMarkets.BlockchainHistory.Application.Features;
-using IcMarkets.BlockchainHistory.Domain.Entities;
+using IcMarkets.BlockchainHistory.Application.Features.Blockchain.Commands;
 using IcMarkets.BlockchainHistory.Domain.Enums;
 using Mediator;
 
@@ -43,39 +39,20 @@ public class Worker : BackgroundService
     private async Task FetchAndStoreAllAsync(CancellationToken ct)
     {
         using var scope = _scopeFactory.CreateScope();
-        var client = scope.ServiceProvider.GetRequiredService<IBlockCypherClient>();
-        var repository = scope.ServiceProvider.GetRequiredService<IBlockchainSnapshotRepository>();
-        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-       
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
         foreach (var blockchainType in _allBlockchainTypes)
         {
             try
             {
-                var data = await client.GetAsync(blockchainType, ct);
-                var rawJson = JsonSerializer.Serialize(data);
+                await mediator.Send(new FetchBlockchainSnapshotCommand(blockchainType), ct);
 
-                var snapshot = BlockchainSnapshot.Create(
-                    blockchainType,
-                    string.Empty,
-                    rawJson,
-                    data.Height,
-                    data.Hash,
-                    data.PeerCount,
-                    data.UnconfirmedCount);
-
-                await repository.AddAsync(snapshot, ct);
-
-                _logger.LogInformation(
-                    "Fetched {BlockchainType}: height={Height}",
-                    blockchainType,
-                    data.Height);
+                _logger.LogInformation("Fetched {BlockchainType}", blockchainType);
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Failed to fetch {BlockchainType}", blockchainType);
             }
         }
-
-        await unitOfWork.SaveChangesAsync(ct);
     }
 }
