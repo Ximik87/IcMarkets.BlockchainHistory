@@ -13,7 +13,6 @@
     <PackageReference Include="Mediator.Abstractions" />
   </ItemGroup>
 
-
   <ItemGroup>
     <ProjectReference Include="..\IcMarkets.BlockchainHistory.Domain\IcMarkets.BlockchainHistory.Domain.csproj" />
   </ItemGroup>
