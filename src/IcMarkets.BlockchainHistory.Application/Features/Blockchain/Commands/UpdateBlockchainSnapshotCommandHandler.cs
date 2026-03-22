@@ -28,7 +28,7 @@ public sealed class UpdateBlockchainSnapshotCommandHandler : ICommandHandler<Upd
         CancellationToken cancellationToken)
     {
         _repository.Update(command.Blockchain);
-        //await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Unit.Value;
     }
