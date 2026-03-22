@@ -29,24 +29,21 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
 
         db.BlockchainSnapshots.AddRange(
             BlockchainSnapshot.Create(
-                BlockchainType.Ethereum,
-                "https://api.blockcypher.com/v1/eth/main",
+                BlockchainType.Ethereum,               
                 """{"name":"ETH.main","height":100}""",
                 height: 100,
                 hash: "hash_eth_1",
                 peerCount: 50,
                 unconfirmedCount: 10),
             BlockchainSnapshot.Create(
-                BlockchainType.Ethereum,
-                "https://api.blockcypher.com/v1/eth/main",
+                BlockchainType.Ethereum,               
                 """{"name":"ETH.main","height":200}""",
                 height: 200,
                 hash: "hash_eth_2",
                 peerCount: 55,
                 unconfirmedCount: 12),
             BlockchainSnapshot.Create(
-                BlockchainType.BitcoinMain,
-                "https://api.blockcypher.com/v1/btc/main",
+                BlockchainType.BitcoinMain,             
                 """{"name":"BTC.main","height":800000}""",
                 height: 800000,
                 hash: "hash_btc_1",

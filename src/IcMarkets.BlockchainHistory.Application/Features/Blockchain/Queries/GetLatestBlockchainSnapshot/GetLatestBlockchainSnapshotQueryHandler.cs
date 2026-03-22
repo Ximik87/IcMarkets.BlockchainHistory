@@ -26,8 +26,7 @@ public sealed class GetLatestBlockchainSnapshotQueryHandler
         return new BlockchainSnapshotResponse
         {
             Id = snapshot.Id,
-            BlockchainType = snapshot.BlockchainType.ToString(),
-            SourceUrl = snapshot.SourceUrl,
+            BlockchainType = snapshot.BlockchainType.ToString(),          
             RawJson = snapshot.RawJson,
             CreatedAt = snapshot.CreatedAt,
             Height = snapshot.Height,

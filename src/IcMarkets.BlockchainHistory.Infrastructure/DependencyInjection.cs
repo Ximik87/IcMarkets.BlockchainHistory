@@ -1,5 +1,6 @@
 using IcMarkets.BlockchainHistory.Application.Abstractions.External;
 using IcMarkets.BlockchainHistory.Application.Abstractions.Persistence;
+using IcMarkets.BlockchainHistory.Application.Features.Blockchain;
 using IcMarkets.BlockchainHistory.Infrastructure.External;
 using IcMarkets.BlockchainHistory.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,7 @@ public static class DependencyInjection
         services.AddHttpClient();
         services.AddScoped<IBlockCypherClient, BlockCypherClient>();
         services.AddMediator(opt => opt.ServiceLifetime = ServiceLifetime.Scoped);
+        services.AddTransient<ICoordinator, Coordinator>();
 
         return services;
     }

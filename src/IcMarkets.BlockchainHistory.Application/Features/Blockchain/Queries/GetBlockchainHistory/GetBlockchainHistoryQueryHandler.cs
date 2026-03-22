@@ -23,8 +23,7 @@ public sealed class GetBlockchainHistoryQueryHandler
         return snapshots.Select(s => new BlockchainSnapshotResponse
         {
             Id = s.Id,
-            BlockchainType = s.BlockchainType.ToString(),
-            SourceUrl = s.SourceUrl,
+            BlockchainType = s.BlockchainType.ToString(),          
             RawJson = s.RawJson,
             CreatedAt = s.CreatedAt,
             Height = s.Height,

@@ -16,8 +16,7 @@ namespace IcMarkets.BlockchainHistory.Infrastructure.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    blockchain_type = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    source_url = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    blockchain_type = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),                    
                     raw_json = table.Column<string>(type: "jsonb", nullable: false),
                     created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     height = table.Column<long>(type: "bigint", nullable: true),
