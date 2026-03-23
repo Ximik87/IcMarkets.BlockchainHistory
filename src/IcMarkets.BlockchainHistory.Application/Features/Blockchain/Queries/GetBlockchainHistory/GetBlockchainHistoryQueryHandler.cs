@@ -50,6 +50,6 @@ public sealed class GetBlockchainHistoryQueryHandler
         var type = blockchainType.ToString().Trim().ToUpperInvariant();
         var utc = createdAt.ToUniversalTime();
 
-        return $"history:{type}:{utc:O}:p{page}:s{pageSize}";
+        return $"history:{type}:{utc:yyyy-MM-ddTHH-mm-ss}:p{page}:s{pageSize}";
     }
 }
