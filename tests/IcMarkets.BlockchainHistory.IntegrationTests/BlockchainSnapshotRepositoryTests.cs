@@ -11,6 +11,7 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
 {
     private readonly AppDbContext _dbContext;
     private readonly BlockchainSnapshotRepository _repository;
+    private readonly CancellationToken _cancellationToken = CancellationToken.None;
 
     public BlockchainSnapshotRepositoryTests()
     {
@@ -126,7 +127,7 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
         _dbContext.ChangeTracker.Clear();
 
         // Act
-        var history = await _repository.GetHistoryAsync(BlockchainType.Litecoin, CancellationToken.None);
+        var history = await _repository.GetHistoryAsync(BlockchainType.Litecoin, _cancellationToken);
 
         // Assert
         history.Count.ShouldBe(2);
@@ -159,8 +160,8 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
         _dbContext.ChangeTracker.Clear();
 
         // Act
-        var btcHistory = await _repository.GetHistoryAsync(BlockchainType.BitcoinMain, CancellationToken.None);
-        var ethHistory = await _repository.GetHistoryAsync(BlockchainType.Ethereum, CancellationToken.None);
+        var btcHistory = await _repository.GetHistoryAsync(BlockchainType.BitcoinMain, _cancellationToken);
+        var ethHistory = await _repository.GetHistoryAsync(BlockchainType.Ethereum, _cancellationToken);
 
         // Assert
         btcHistory.Count.ShouldBe(1);
@@ -174,7 +175,7 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
     public async Task GetHistoryAsync_ShouldReturnEmptyListWhenNoSnapshots()
     {
         // Act
-        var history = await _repository.GetHistoryAsync(BlockchainType.Dash, CancellationToken.None);
+        var history = await _repository.GetHistoryAsync(BlockchainType.Dash, _cancellationToken);
 
         // Assert
         history.ShouldBeEmpty();
@@ -210,7 +211,7 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
         _dbContext.ChangeTracker.Clear();
 
         // Act
-        var latest = await _repository.GetLatestAsync(BlockchainType.Dash, CancellationToken.None);
+        var latest = await _repository.GetLatestAsync(BlockchainType.Dash, _cancellationToken);
 
         // Assert
         latest.ShouldNotBeNull();
@@ -222,7 +223,7 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
     public async Task GetLatestAsync_ShouldReturnNullWhenNoSnapshots()
     {
         // Act
-        var latest = await _repository.GetLatestAsync(BlockchainType.BitcoinTest3, CancellationToken.None);
+        var latest = await _repository.GetLatestAsync(BlockchainType.BitcoinTest3, _cancellationToken);
 
         // Assert
         latest.ShouldBeNull();
@@ -245,7 +246,7 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
         _dbContext.ChangeTracker.Clear();
 
         // Act
-        var result = await _repository.GetByHashAsync("unique_hash_123", CancellationToken.None);
+        var result = await _repository.GetByHashAsync("unique_hash_123", _cancellationToken);
 
         // Assert
         result.ShouldNotBeNull();
@@ -258,7 +259,7 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
     public async Task GetByHashAsync_ShouldReturnNullWhenHashNotFound()
     {
         // Act
-        var result = await _repository.GetByHashAsync("nonexistent_hash", CancellationToken.None);
+        var result = await _repository.GetByHashAsync("nonexistent_hash", _cancellationToken);
 
         // Assert
         result.ShouldBeNull();

@@ -16,15 +16,16 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
-        builder.Services.AddHealthChecks();
+        builder.Services.AddHealthChecks()
+            .AddNpgSql(builder.Configuration.GetConnectionString("Postgres") ?? string.Empty);
 
         builder.Services.AddCors(options =>
         {
             options.AddDefaultPolicy(policy =>
             {
                 policy.AllowAnyOrigin()
-                      .AllowAnyHeader()
-                      .AllowAnyMethod();
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
             });
         });
 
