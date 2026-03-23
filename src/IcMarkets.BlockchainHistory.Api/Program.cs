@@ -16,6 +16,18 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
+        builder.Services.AddHealthChecks();
+
+        builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policy =>
+            {
+                policy.AllowAnyOrigin()
+                      .AllowAnyHeader()
+                      .AllowAnyMethod();
+            });
+        });
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -27,9 +39,11 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        app.UseCors();
+
         app.UseAuthorization();
 
-
+        app.MapHealthChecks("/health");
         app.MapControllers();
 
         app.Run();
