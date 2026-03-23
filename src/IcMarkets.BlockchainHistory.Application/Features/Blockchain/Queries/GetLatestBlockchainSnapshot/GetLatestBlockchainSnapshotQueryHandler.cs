@@ -1,11 +1,14 @@
 ﻿using IcMarkets.BlockchainHistory.Application.Abstractions.Persistence;
 using IcMarkets.BlockchainHistory.Application.DTOs;
+using IcMarkets.BlockchainHistory.Domain.Enums;
 using Mediator;
 
 namespace IcMarkets.BlockchainHistory.Application.Features.Blockchain.Queries.GetLatestBlockchainSnapshot;
 
-public sealed class GetLatestBlockchainSnapshotQueryHandler
-    : IQueryHandler<GetLatestBlockchainSnapshotQuery, BlockchainSnapshotResponse?>
+public sealed record GetLatestBlockchainSnapshotQuery(BlockchainType BlockchainType)
+    : IQuery<BlockchainSnapshotResponse?>;
+
+public sealed class GetLatestBlockchainSnapshotQueryHandler : IQueryHandler<GetLatestBlockchainSnapshotQuery, BlockchainSnapshotResponse?>
 {
     private readonly IBlockchainSnapshotRepository _repository;
 
@@ -26,7 +29,7 @@ public sealed class GetLatestBlockchainSnapshotQueryHandler
         return new BlockchainSnapshotResponse
         {
             Id = snapshot.Id,
-            BlockchainType = snapshot.BlockchainType.ToString(),          
+            BlockchainType = snapshot.BlockchainType.ToString(),
             RawJson = snapshot.RawJson,
             CreatedAt = snapshot.CreatedAt,
             Height = snapshot.Height,

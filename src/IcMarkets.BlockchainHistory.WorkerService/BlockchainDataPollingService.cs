@@ -3,20 +3,19 @@ using IcMarkets.BlockchainHistory.Domain.Enums;
 
 namespace IcMarkets.BlockchainHistory.WorkerService;
 
-public class Worker : BackgroundService
+public sealed class BlockchainDataPollingService : BackgroundService
 {
     private readonly BlockchainType[] _allBlockchainTypes = Enum.GetValues<BlockchainType>();
-    private readonly TimeSpan _pollingInterval = TimeSpan.FromMinutes(1);
+    private readonly TimeSpan _pollingInterval = TimeSpan.FromMinutes(5);
     private readonly IServiceScopeFactory _scopeFactory;
-    private readonly ILogger<Worker> _logger;
-  
-    public Worker(
+    private readonly ILogger<BlockchainDataPollingService> _logger;
+
+    public BlockchainDataPollingService(
         IServiceScopeFactory scopeFactory,
-        ILogger<Worker> logger)
+        ILogger<BlockchainDataPollingService> logger)
     {
         _scopeFactory = scopeFactory;
         _logger = logger;
-       
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -40,18 +39,18 @@ public class Worker : BackgroundService
 
     private async Task FetchAndStoreAllAsync(CancellationToken ct)
     {
+        using var scope = _scopeFactory.CreateScope();
+        var coordinator = scope.ServiceProvider.GetRequiredService<IBlockchainSnapshotSynchronizer>();
+
         foreach (var blockchainType in _allBlockchainTypes)
         {
             try
             {
-                using var scope = _scopeFactory.CreateScope();
-                var coordinator = scope.ServiceProvider.GetRequiredService<ICoordinator>();
-
                 await coordinator.FetchAndStoreAsync(blockchainType, ct);
                 _logger.LogInformation("Fetched {BlockchainType}", blockchainType);
 
-                // small delay
-                await Task.Delay(500, ct);
+                // small delay becase api have rate limits
+                await Task.Delay(800, ct);
             }
             catch (Exception ex)
             {

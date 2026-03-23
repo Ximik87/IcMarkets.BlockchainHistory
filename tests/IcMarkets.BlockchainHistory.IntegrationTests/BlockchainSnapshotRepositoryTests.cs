@@ -81,14 +81,20 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
     public async Task Update_ShouldModifyExistingSnapshot()
     {
         // Arrange
-        var snapshot =
-            _dbContext.BlockchainSnapshots.First(x => x.Id == Guid.Parse("2215498e-b32d-4f0d-9bf4-1993f481be9e"));
-
+        var snapshot = BlockchainSnapshot.Create(
+            BlockchainType.BitcoinMain,
+            """{"name":"BTC.main"}""",
+            height: 800_000,
+            hash: "abc123",
+            peerCount: 250,
+            unconfirmedCount: 1000);
+        _repository.Add(snapshot);
+        await _dbContext.SaveChangesAsync();
+       
         // Act
         snapshot.Update(snapshot.RawJson, height: 101, peerCount: 55, unconfirmedCount: 210);
         _repository.Update(snapshot);
         await _dbContext.SaveChangesAsync();
-
 
         // Assert
         var updated = await _dbContext.BlockchainSnapshots

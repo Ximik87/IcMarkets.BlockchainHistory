@@ -9,7 +9,7 @@ public class Program
         var builder = Host.CreateApplicationBuilder(args);
 
         builder.Services.AddInfrastructure(builder.Configuration);
-        builder.Services.AddHostedService<Worker>();        
+        builder.Services.AddHostedService<BlockchainDataPollingService>();        
 
         var host = builder.Build();
 

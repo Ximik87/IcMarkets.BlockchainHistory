@@ -1,8 +1,12 @@
 ﻿using IcMarkets.BlockchainHistory.Application.Abstractions.Persistence;
 using IcMarkets.BlockchainHistory.Application.DTOs;
+using IcMarkets.BlockchainHistory.Domain.Enums;
 using Mediator;
 
 namespace IcMarkets.BlockchainHistory.Application.Features.Blockchain.Queries.GetBlockchainHistory;
+
+public sealed record GetBlockchainHistoryQuery(BlockchainType BlockchainType)
+    : IQuery<IReadOnlyList<BlockchainSnapshotResponse>>;
 
 public sealed class GetBlockchainHistoryQueryHandler
     : IQueryHandler<GetBlockchainHistoryQuery, IReadOnlyList<BlockchainSnapshotResponse>>

@@ -44,7 +44,7 @@ internal sealed class BlockCypherClient : IBlockCypherClient
 
         return blockchain;
     }
-  
+
     private string GetUrl(BlockchainType blockchainType) => blockchainType switch
     {
         BlockchainType.Ethereum => _options.EthMainUrl,

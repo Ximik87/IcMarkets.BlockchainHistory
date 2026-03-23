@@ -23,9 +23,9 @@ public static class DependencyInjection
 
         services.Configure<BlockCypherOptions>(configuration.GetSection("BlockCypher"));
         services.AddHttpClient();
-        services.AddScoped<IBlockCypherClient, BlockCypherClient>();
+        services.AddTransient<IBlockCypherClient, BlockCypherClient>();
         services.AddMediator(opt => opt.ServiceLifetime = ServiceLifetime.Scoped);
-        services.AddTransient<ICoordinator, Coordinator>();
+        services.AddTransient<IBlockchainSnapshotSynchronizer, BlockchainSnapshotSynchronizer>();
 
         return services;
     }
