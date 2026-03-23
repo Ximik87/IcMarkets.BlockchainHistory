@@ -56,13 +56,7 @@ namespace IcMarkets.BlockchainHistory.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("jsonb")
                         .HasColumnName("raw_json");
-
-                    b.Property<string>("SourceUrl")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("source_url");
-
+                   
                     b.Property<int?>("UnconfirmedCount")
                         .HasColumnType("integer")
                         .HasColumnName("unconfirmed_count");

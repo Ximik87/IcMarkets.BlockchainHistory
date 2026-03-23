@@ -1,6 +1,8 @@
-using IcMarkets.BlockchainHistory.Application.Abstractions.Persistence;
 using IcMarkets.BlockchainHistory.Application.DTOs;
+using IcMarkets.BlockchainHistory.Application.Features.Blockchain.Queries.GetBlockchainHistory;
+using IcMarkets.BlockchainHistory.Application.Features.Blockchain.Queries.GetLatestBlockchainSnapshot;
 using IcMarkets.BlockchainHistory.Domain.Enums;
+using Mediator;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IcMarkets.BlockchainHistory.Api.Controllers;
@@ -9,11 +11,11 @@ namespace IcMarkets.BlockchainHistory.Api.Controllers;
 [Route("api/[controller]")]
 public sealed class BlockchainSnapshotsController : ControllerBase
 {
-    private readonly IBlockchainSnapshotRepository _repository;
+    private readonly IMediator _mediator;
 
-    public BlockchainSnapshotsController(IBlockchainSnapshotRepository repository)
+    public BlockchainSnapshotsController(IMediator mediator)
     {
-        _repository = repository;
+        _mediator = mediator;
     }
 
     /// <summary>
@@ -22,9 +24,7 @@ public sealed class BlockchainSnapshotsController : ControllerBase
     [HttpGet("{blockchainType}")]
     [ProducesResponseType(typeof(IReadOnlyList<BlockchainSnapshotResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetHistory(
-        string blockchainType,
-        CancellationToken ct)
+    public async Task<IActionResult> GetHistory(string blockchainType, DateTime? createAt, CancellationToken ct)
     {
         if (!Enum.TryParse<BlockchainType>(blockchainType, ignoreCase: true, out var parsed))
         {
@@ -32,20 +32,9 @@ public sealed class BlockchainSnapshotsController : ControllerBase
                               $"Valid values: {string.Join(", ", Enum.GetNames<BlockchainType>())}");
         }
 
-        var snapshots = await _repository.GetHistoryAsync(parsed, ct);
+        createAt ??= DateTime.UtcNow.AddDays(-1);
 
-        var response = snapshots.Select(s => new BlockchainSnapshotResponse
-        {
-            Id = s.Id,
-            BlockchainType = s.BlockchainType.ToString(),
-            SourceUrl = s.SourceUrl,
-            RawJson = s.RawJson,
-            CreatedAt = s.CreatedAt,
-            Height = s.Height,
-            Hash = s.Hash,
-            PeerCount = s.PeerCount,
-            UnconfirmedCount = s.UnconfirmedCount
-        }).ToList();
+        var response = await _mediator.Send(new GetBlockchainHistoryQuery(parsed, createAt.Value), ct);
 
         return Ok(response);
     }
@@ -67,23 +56,10 @@ public sealed class BlockchainSnapshotsController : ControllerBase
                               $"Valid values: {string.Join(", ", Enum.GetNames<BlockchainType>())}");
         }
 
-        var snapshot = await _repository.GetLatestAsync(parsed, ct);
+        var response = await _mediator.Send(new GetLatestBlockchainSnapshotQuery(parsed), ct);
 
-        if (snapshot is null)
+        if (response is null)
             return NotFound();
-
-        var response = new BlockchainSnapshotResponse
-        {
-            Id = snapshot.Id,
-            BlockchainType = snapshot.BlockchainType.ToString(),
-            SourceUrl = snapshot.SourceUrl,
-            RawJson = snapshot.RawJson,
-            CreatedAt = snapshot.CreatedAt,
-            Height = snapshot.Height,
-            Hash = snapshot.Hash,
-            PeerCount = snapshot.PeerCount,
-            UnconfirmedCount = snapshot.UnconfirmedCount
-        };
 
         return Ok(response);
     }

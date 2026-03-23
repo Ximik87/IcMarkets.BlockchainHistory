@@ -10,11 +10,25 @@ public class Program
 
         // Add services to the container.
         builder.Services.AddInfrastructure(builder.Configuration);
+        builder.Services.AddMemoryCache();
 
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+
+        builder.Services.AddHealthChecks()
+            .AddNpgSql(builder.Configuration.GetConnectionString("Postgres") ?? string.Empty);
+
+        builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policy =>
+            {
+                policy.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
 
         var app = builder.Build();
 
@@ -27,9 +41,11 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        app.UseCors();
+
         app.UseAuthorization();
 
-
+        app.MapHealthChecks("/health");
         app.MapControllers();
 
         app.Run();

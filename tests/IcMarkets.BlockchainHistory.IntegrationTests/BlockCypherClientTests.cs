@@ -1,10 +1,12 @@
+using IcMarkets.BlockchainHistory.Domain.Enums;
 using IcMarkets.BlockchainHistory.Infrastructure.External;
 using Microsoft.Extensions.Options;
 using Moq;
+using Shouldly;
 
 namespace IcMarkets.BlockchainHistory.IntegrationTests;
 
-public class BlockCypherClientTests
+public sealed class BlockCypherClientTests
 {
     [Fact]
     public async Task Get_Test()
@@ -13,7 +15,6 @@ public class BlockCypherClientTests
         var clientFactory = new Mock<IHttpClientFactory>();
         clientFactory.Setup(x => x.CreateClient(""))
             .Returns(() => new HttpClient());
-
         var options = Options.Create(new BlockCypherOptions
         {
             BtcMainUrl = "https://api.blockcypher.com/v1/btc/main",
@@ -22,13 +23,15 @@ public class BlockCypherClientTests
             DashMainUrl = "https://api.blockcypher.com/v1/dash/main",
             EthMainUrl = "https://api.blockcypher.com/v1/eth/main"
         });
-
         var sut = new BlockCypherClient(clientFactory.Object, options);
 
         // Act
-        var result = await sut.Get();
+        var result = await sut.GetAsync(BlockchainType.BitcoinMain, CancellationToken.None);
 
-        // Assert
-        Assert.NotNull(result);
+        // Assert      
+        result.ShouldNotBeNull();
+        result.Name.ShouldBe("BTC.main");
+        result.PeerCount.ShouldBeGreaterThan(0);
+        result.Height.ShouldBeGreaterThan(0);
     }
 }

@@ -5,12 +5,12 @@ namespace IcMarkets.BlockchainHistory.Application.Abstractions.Persistence;
 
 public interface IBlockchainSnapshotRepository
 {
-    Task AddAsync(BlockchainSnapshot entity, CancellationToken ct);
-    Task<IReadOnlyList<BlockchainSnapshot>> GetHistoryAsync(
-        BlockchainType blockchainType,
+    void Add(BlockchainSnapshot entity);
+    void Update(BlockchainSnapshot entity);
+
+    Task<IReadOnlyList<BlockchainSnapshot>> GetHistoryAsync(BlockchainType blockchainType, DateTimeOffset createAt,
         CancellationToken ct);
 
-    Task<BlockchainSnapshot?> GetLatestAsync(
-        BlockchainType blockchainType,
-        CancellationToken ct);
+    Task<BlockchainSnapshot?> GetLatestAsync(BlockchainType blockchainType, CancellationToken ct);
+    Task<BlockchainSnapshot?> GetByHashAsync(string hash, CancellationToken ct);
 }

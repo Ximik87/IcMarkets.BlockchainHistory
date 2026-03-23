@@ -1,10 +1,10 @@
 ﻿namespace IcMarkets.BlockchainHistory.Infrastructure.External;
 
-public class BlockCypherOptions
+public sealed class BlockCypherOptions
 {
-    public string EthMainUrl { get; set; } = default!;
-    public string DashMainUrl { get; set; } = default!;
-    public string BtcMainUrl { get; set; } = default!;
-    public string BtcTest3Url { get; set; } = default!;
-    public string LtcMainUrl { get; set; } = default!;
+    public string EthMainUrl { get; set; } = string.Empty;
+    public string DashMainUrl { get; set; } = string.Empty;
+    public string BtcMainUrl { get; set; } = string.Empty;
+    public string BtcTest3Url { get; set; } = string.Empty;
+    public string LtcMainUrl { get; set; } = string.Empty;
 }

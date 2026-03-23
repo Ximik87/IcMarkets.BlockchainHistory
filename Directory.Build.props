@@ -3,7 +3,4 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageVersion Include="Bogus" Version="35.6.0" />    
-  </ItemGroup>
 </Project>

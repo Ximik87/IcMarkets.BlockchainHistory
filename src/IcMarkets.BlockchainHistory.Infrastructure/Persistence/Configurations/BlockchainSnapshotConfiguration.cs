@@ -19,12 +19,7 @@ internal sealed class BlockchainSnapshotConfiguration : IEntityTypeConfiguration
             .HasColumnName("blockchain_type")
             .HasConversion<string>()
             .HasMaxLength(50)
-            .IsRequired();
-
-        builder.Property(x => x.SourceUrl)
-            .HasColumnName("source_url")
-            .HasMaxLength(500)
-            .IsRequired();
+            .IsRequired();    
 
         builder.Property(x => x.RawJson)
             .HasColumnName("raw_json")
@@ -47,6 +42,11 @@ internal sealed class BlockchainSnapshotConfiguration : IEntityTypeConfiguration
 
         builder.Property(x => x.UnconfirmedCount)
             .HasColumnName("unconfirmed_count");
+
+        builder.HasIndex(x => x.Hash)
+            .HasDatabaseName("ix_blockchain_snapshots_hash")
+            .IsUnique()
+            .HasFilter("hash IS NOT NULL");
 
         builder.HasIndex(x => new { x.BlockchainType, x.CreatedAt })
             .HasDatabaseName("ix_blockchain_snapshots_type_created");

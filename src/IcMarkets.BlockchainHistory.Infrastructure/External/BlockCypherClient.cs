@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net.Http.Json;
 using IcMarkets.BlockchainHistory.Application.Abstractions.External;
 using IcMarkets.BlockchainHistory.Application.DTOs;
 using IcMarkets.BlockchainHistory.Domain.Enums;
@@ -17,15 +18,7 @@ internal sealed class BlockCypherClient : IBlockCypherClient
         _options = options.Value;
     }
 
-    public async Task<Blockchain> Get()
-    {
-        var (data, _) = await GetAsync(BlockchainType.BitcoinMain);
-        return data;
-    }
-
-    public async Task<(Blockchain Data, string SourceUrl)> GetAsync(
-        BlockchainType blockchainType,
-        CancellationToken ct = default)
+    public async Task<Blockchain> GetAsync(BlockchainType blockchainType, CancellationToken ct)
     {
         var url = GetUrl(blockchainType);
         using var client = _factory.CreateClient();
@@ -49,7 +42,7 @@ internal sealed class BlockCypherClient : IBlockCypherClient
             LastForkHash = response?.last_fork_hash ?? string.Empty
         };
 
-        return (blockchain, url);
+        return blockchain;
     }
 
     private string GetUrl(BlockchainType blockchainType) => blockchainType switch
@@ -63,20 +56,21 @@ internal sealed class BlockCypherClient : IBlockCypherClient
     };
 }
 
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 internal class BlockchainResponse
 {
-    public string name { get; set; }
+    public string name { get; set; } = string.Empty;
     public int height { get; set; }
-    public string hash { get; set; }
-    public string time { get; set; }
-    public string latest_url { get; set; }
-    public string previous_hash { get; set; }
-    public string previous_url { get; set; }
+    public string hash { get; set; } = string.Empty;
+    public string time { get; set; } = string.Empty;
+    public string latest_url { get; set; } = string.Empty;
+    public string previous_hash { get; set; } = string.Empty;
+    public string previous_url { get; set; } = string.Empty;
     public int peer_count { get; set; }
     public int unconfirmed_count { get; set; }
     public int high_fee_per_kb { get; set; }
     public int medium_fee_per_kb { get; set; }
     public int low_fee_per_kb { get; set; }
     public int last_fork_height { get; set; }
-    public string last_fork_hash { get; set; }
+    public string? last_fork_hash { get; set; }
 }
