@@ -1,5 +1,4 @@
-# IcMarkets BlockchainHistory WebApi
-# IcMarkets BlockchainHistory WebApi
+# ICMarkets BlockchainHistory WebApi
 
 Install the postgres image in Docker; the database will be accessible on port 5432.
 ```
