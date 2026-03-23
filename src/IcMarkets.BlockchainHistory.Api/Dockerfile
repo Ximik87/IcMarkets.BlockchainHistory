@@ -12,7 +12,11 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+COPY ["Directory.Build.props", "."]
 COPY ["src/IcMarkets.BlockchainHistory.Api/IcMarkets.BlockchainHistory.Api.csproj", "src/IcMarkets.BlockchainHistory.Api/"]
+COPY ["src/IcMarkets.BlockchainHistory.Application/IcMarkets.BlockchainHistory.Application.csproj", "src/IcMarkets.BlockchainHistory.Application/"]
+COPY ["src/IcMarkets.BlockchainHistory.Domain/IcMarkets.BlockchainHistory.Domain.csproj", "src/IcMarkets.BlockchainHistory.Domain/"]
+COPY ["src/IcMarkets.BlockchainHistory.Infrastructure/IcMarkets.BlockchainHistory.Infrastructure.csproj", "src/IcMarkets.BlockchainHistory.Infrastructure/"]
 RUN dotnet restore "./src/IcMarkets.BlockchainHistory.Api/IcMarkets.BlockchainHistory.Api.csproj"
 COPY . .
 WORKDIR "/src/src/IcMarkets.BlockchainHistory.Api"

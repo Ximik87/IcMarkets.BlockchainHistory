@@ -2,30 +2,41 @@ version: '3.9'
 
 services:
   db:
-    image: postgres:16
-    container_name: my-postgres
+    image: postgres
+    container_name: blockchain-postgres
     restart: always
     environment:
-      POSTGRES_DB: appdb
-      POSTGRES_USER: appuser
-      POSTGRES_PASSWORD: secret123
+      POSTGRES_DB: blockchain_history
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  app:
+  api:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: my-api
+      dockerfile: src/IcMarkets.BlockchainHistory.Api/Dockerfile
+    container_name: blockchain-api
     depends_on:
       - db
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=appdb;Username=appuser;Password=secret123
+      ConnectionStrings__Postgres: Host=db;Port=5432;Database=blockchain_history;Username=postgres;Password=mysecretpassword
     ports:
       - "8080:8080"
+
+  worker:
+    build:
+      context: .
+      dockerfile: src/IcMarkets.BlockchainHistory.WorkerService/Dockerfile
+    container_name: blockchain-worker
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Postgres: Host=db;Port=5432;Database=blockchain_history;Username=postgres;Password=mysecretpassword
 
 volumes:
   postgres_data:
