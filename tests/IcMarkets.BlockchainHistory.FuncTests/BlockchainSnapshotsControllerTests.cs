@@ -24,11 +24,11 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
     public async Task GetTypes_ReturnsAllBlockchainTypes()
     {
         // Act
-        var response = await _client.GetAsync("/api/BlockchainSnapshots/types");
+        var response = await _client.GetAsync("/api/BlockchainSnapshots/types", TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        var types = await response.Content.ReadFromJsonAsync<List<string>>();
+        var types = await response.Content.ReadFromJsonAsync<List<string>>(TestContext.Current.CancellationToken);
         types.ShouldNotBeNull();
         types.ShouldContain("Ethereum");
         types.ShouldContain("BitcoinMain");
@@ -40,34 +40,42 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
     public async Task GetHistory_ValidType_ReturnsSnapshots()
     {
         // Act
-        var response = await _client.GetAsync("/api/BlockchainSnapshots/Ethereum");
+        var response =
+            await _client.GetAsync("/api/BlockchainSnapshots/Ethereum", TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        var snapshots = await response.Content.ReadFromJsonAsync<List<BlockchainSnapshotResponse>>();
-        snapshots.ShouldNotBeNull();
-        snapshots.Count.ShouldBe(2);
-        snapshots.ShouldAllBe(s => s.BlockchainType == "Ethereum");
+        var paged =
+            await response.Content.ReadFromJsonAsync<PagedResponse<BlockchainSnapshotResponse>>(TestContext.Current
+                .CancellationToken);
+        paged.ShouldNotBeNull();
+        paged.Items.Count.ShouldBe(2);
+        paged.TotalCount.ShouldBe(2);
+        paged.Items.ShouldAllBe(s => s.BlockchainType == "Ethereum");
     }
 
     [Fact]
     public async Task GetHistory_ValidTypeCaseInsensitive_ReturnsSnapshots()
     {
         // Act
-        var response = await _client.GetAsync("/api/BlockchainSnapshots/ethereum");
+        var response =
+            await _client.GetAsync("/api/BlockchainSnapshots/ethereum", TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        var snapshots = await response.Content.ReadFromJsonAsync<List<BlockchainSnapshotResponse>>();
-        snapshots.ShouldNotBeNull();
-        snapshots.Count.ShouldBe(2);
+        var paged =
+            await response.Content.ReadFromJsonAsync<PagedResponse<BlockchainSnapshotResponse>>(TestContext.Current
+                .CancellationToken);
+        paged.ShouldNotBeNull();
+        paged.Items.Count.ShouldBe(2);
     }
 
     [Fact]
     public async Task GetHistory_InvalidType_ReturnsBadRequest()
     {
         // Act
-        var response = await _client.GetAsync("/api/BlockchainSnapshots/InvalidChain");
+        var response = await _client.GetAsync("/api/BlockchainSnapshots/InvalidChain",
+            TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -77,24 +85,29 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
     public async Task GetHistory_TypeWithNoData_ReturnsEmptyList()
     {
         // Act
-        var response = await _client.GetAsync("/api/BlockchainSnapshots/Dash");
+        var response = await _client.GetAsync("/api/BlockchainSnapshots/Dash", TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        var snapshots = await response.Content.ReadFromJsonAsync<List<BlockchainSnapshotResponse>>();
-        snapshots.ShouldNotBeNull();
-        snapshots.ShouldBeEmpty();
+        var paged =
+            await response.Content.ReadFromJsonAsync<PagedResponse<BlockchainSnapshotResponse>>(TestContext.Current
+                .CancellationToken);
+        paged.ShouldNotBeNull();
+        paged.Items.ShouldBeEmpty();
+        paged.TotalCount.ShouldBe(0);
     }
 
     [Fact]
     public async Task GetLatest_ValidType_ReturnsLatestSnapshot()
     {
         // Act
-        var response = await _client.GetAsync("/api/BlockchainSnapshots/Ethereum/latest");
+        var response = await _client.GetAsync("/api/BlockchainSnapshots/Ethereum/latest",
+            TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        var snapshot = await response.Content.ReadFromJsonAsync<BlockchainSnapshotResponse>();
+        var snapshot =
+            await response.Content.ReadFromJsonAsync<BlockchainSnapshotResponse>(TestContext.Current.CancellationToken);
         snapshot.ShouldNotBeNull();
         snapshot.BlockchainType.ShouldBe("Ethereum");
         snapshot.Height.ShouldBe(200);
@@ -104,7 +117,8 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
     public async Task GetLatest_InvalidType_ReturnsBadRequest()
     {
         // Act
-        var response = await _client.GetAsync("/api/BlockchainSnapshots/InvalidChain/latest");
+        var response = await _client.GetAsync("/api/BlockchainSnapshots/InvalidChain/latest",
+            TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -114,7 +128,8 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
     public async Task GetLatest_TypeWithNoData_ReturnsNotFound()
     {
         // Act
-        var response = await _client.GetAsync("/api/BlockchainSnapshots/Litecoin/latest");
+        var response = await _client.GetAsync("/api/BlockchainSnapshots/Litecoin/latest",
+            TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
@@ -124,18 +139,21 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
     public async Task GetHistory_BitcoinMain_ReturnsCorrectData()
     {
         // Act
-        var response = await _client.GetAsync("/api/BlockchainSnapshots/BitcoinMain");
+        var response =
+            await _client.GetAsync("/api/BlockchainSnapshots/BitcoinMain", TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        var snapshots = await response.Content.ReadFromJsonAsync<List<BlockchainSnapshotResponse>>();
-        snapshots.ShouldNotBeNull();
-        snapshots.Count.ShouldBe(1);
-        snapshots[0].Height.ShouldBe(800000);
-        snapshots[0].Hash.ShouldBe("hash_btc_1");
+        var paged =
+            await response.Content.ReadFromJsonAsync<PagedResponse<BlockchainSnapshotResponse>>(TestContext.Current
+                .CancellationToken);
+        paged.ShouldNotBeNull();
+        paged.Items.Count.ShouldBe(1);
+        paged.Items[0].Height.ShouldBe(800000);
+        paged.Items[0].Hash.ShouldBe("hash_btc_1");
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         // Seed test data
         var date = DateTimeOffset.UtcNow.AddMinutes(-5);
@@ -172,7 +190,7 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
         await db.SaveChangesAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();

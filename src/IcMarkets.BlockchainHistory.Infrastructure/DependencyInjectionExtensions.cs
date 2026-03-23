@@ -1,4 +1,5 @@
 using FluentValidation;
+using IcMarkets.BlockchainHistory.Application.Abstractions;
 using IcMarkets.BlockchainHistory.Application.Abstractions.External;
 using IcMarkets.BlockchainHistory.Application.Abstractions.Persistence;
 using IcMarkets.BlockchainHistory.Application.Behaviors;

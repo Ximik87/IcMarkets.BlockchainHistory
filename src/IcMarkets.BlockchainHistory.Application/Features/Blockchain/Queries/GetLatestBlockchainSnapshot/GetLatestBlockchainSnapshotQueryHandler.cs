@@ -14,7 +14,6 @@ public sealed class GetLatestBlockchainSnapshotQueryHandler : IQueryHandler<GetL
     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
     private readonly IBlockchainSnapshotRepository _repository;
     private readonly IMemoryCache _cache;
-    private readonly SemaphoreSlim _lock = new(1, 1);
 
     public GetLatestBlockchainSnapshotQueryHandler(
         IBlockchainSnapshotRepository repository,
@@ -30,49 +29,19 @@ public sealed class GetLatestBlockchainSnapshotQueryHandler : IQueryHandler<GetL
     {
         var cacheKey = GetKey(query.BlockchainType);
 
-        if (_cache.TryGetValue(cacheKey, out BlockchainSnapshotResponse? cached))
+        var response = await _cache.GetOrCreateAsync(cacheKey, async entry =>
         {
-            return cached;
-        }
-
-        await _lock.WaitAsync(cancellationToken);
-
-        try
-        {
-            // Double-check after acquiring the lock to prevent cache stampede
-            if (_cache.TryGetValue(cacheKey, out BlockchainSnapshotResponse? cached2))
-            {
-                return cached2;
-            }
+            entry.AbsoluteExpirationRelativeToNow = CacheDuration;
 
             var snapshot = await _repository.GetLatestAsync(query.BlockchainType, cancellationToken);
 
             if (snapshot is null)
-            {
-                _cache.Set<BlockchainSnapshotResponse?>(cacheKey, null, CacheDuration);
                 return null;
-            }
 
-            var response = new BlockchainSnapshotResponse
-            {
-                Id = snapshot.Id,
-                BlockchainType = snapshot.BlockchainType.ToString(),
-                RawJson = snapshot.RawJson,
-                CreatedAt = snapshot.CreatedAt,
-                Height = snapshot.Height,
-                Hash = snapshot.Hash,
-                PeerCount = snapshot.PeerCount,
-                UnconfirmedCount = snapshot.UnconfirmedCount
-            };
+            return snapshot.ToResponse();
+        });
 
-            _cache.Set<BlockchainSnapshotResponse?>(cacheKey, response, CacheDuration);
-
-            return response;
-        }
-        finally
-        {
-            _lock.Release();
-        }
+        return response;
     }
 
     private static string GetKey(BlockchainType blockchainType)

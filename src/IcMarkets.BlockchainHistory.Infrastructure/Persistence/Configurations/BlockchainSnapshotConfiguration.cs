@@ -43,6 +43,38 @@ internal sealed class BlockchainSnapshotConfiguration : IEntityTypeConfiguration
         builder.Property(x => x.UnconfirmedCount)
             .HasColumnName("unconfirmed_count");
 
+        builder.Property(x => x.Time)
+            .HasColumnName("time")
+            .HasMaxLength(256);
+
+        builder.Property(x => x.LatestUrl)
+            .HasColumnName("latest_url")
+            .HasMaxLength(512);
+
+        builder.Property(x => x.PreviousHash)
+            .HasColumnName("previous_hash")
+            .HasMaxLength(256);
+
+        builder.Property(x => x.PreviousUrl)
+            .HasColumnName("previous_url")
+            .HasMaxLength(512);
+
+        builder.Property(x => x.HighFeePerKb)
+            .HasColumnName("high_fee_per_kb");
+
+        builder.Property(x => x.MediumFeePerKb)
+            .HasColumnName("medium_fee_per_kb");
+
+        builder.Property(x => x.LowFeePerKb)
+            .HasColumnName("low_fee_per_kb");
+
+        builder.Property(x => x.LastForkHeight)
+            .HasColumnName("last_fork_height");
+
+        builder.Property(x => x.LastForkHash)
+            .HasColumnName("last_fork_hash")
+            .HasMaxLength(256);
+
         builder.HasIndex(x => x.Hash)
             .HasDatabaseName("ix_blockchain_snapshots_hash")
             .IsUnique()

@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
 namespace IcMarkets.BlockchainHistory.Application.Features.Blockchain.Commands;
 

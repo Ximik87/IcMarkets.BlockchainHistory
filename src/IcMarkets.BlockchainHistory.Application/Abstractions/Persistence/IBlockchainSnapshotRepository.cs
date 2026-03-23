@@ -8,8 +8,8 @@ public interface IBlockchainSnapshotRepository
     void Add(BlockchainSnapshot entity);
     void Update(BlockchainSnapshot entity);
 
-    Task<IReadOnlyList<BlockchainSnapshot>> GetHistoryAsync(BlockchainType blockchainType, DateTimeOffset createAt,
-        CancellationToken ct);
+    Task<(IReadOnlyList<BlockchainSnapshot> Items, int TotalCount)> GetHistoryAsync(
+        BlockchainType blockchainType, DateTimeOffset createAt, int page, int pageSize, CancellationToken ct);
 
     Task<BlockchainSnapshot?> GetLatestAsync(BlockchainType blockchainType, CancellationToken ct);
     Task<BlockchainSnapshot?> GetByHashAsync(string hash, CancellationToken ct);

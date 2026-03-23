@@ -1,3 +1,4 @@
+using IcMarkets.BlockchainHistory.Api.Infrastructure;
 using IcMarkets.BlockchainHistory.Infrastructure;
 
 namespace IcMarkets.BlockchainHistory.Api;
@@ -11,6 +12,8 @@ public class Program
         // Add services to the container.
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddMemoryCache();
+        builder.Services.AddProblemDetails();
+        builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -38,6 +41,8 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
+        app.UseExceptionHandler();
 
         app.UseHttpsRedirection();
 

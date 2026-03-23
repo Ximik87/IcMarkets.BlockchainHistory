@@ -24,16 +24,26 @@ internal sealed class BlockchainSnapshotRepository : IBlockchainSnapshotReposito
         _dbContext.BlockchainSnapshots.Update(entity);
     }
 
-    public async Task<IReadOnlyList<BlockchainSnapshot>> GetHistoryAsync(
+    public async Task<(IReadOnlyList<BlockchainSnapshot> Items, int TotalCount)> GetHistoryAsync(
         BlockchainType blockchainType,
         DateTimeOffset createAt,
+        int page,
+        int pageSize,
         CancellationToken ct)
     {
-        return await _dbContext.BlockchainSnapshots
+        var query = _dbContext.BlockchainSnapshots
             .Where(s => s.BlockchainType == blockchainType && s.CreatedAt >= createAt)
             .OrderByDescending(s => s.CreatedAt)
-            .AsNoTracking()
+            .AsNoTracking();
+
+        var totalCount = await query.CountAsync(ct);
+
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync(ct);
+
+        return (items, totalCount);
     }
 
     public async Task<BlockchainSnapshot?> GetLatestAsync(

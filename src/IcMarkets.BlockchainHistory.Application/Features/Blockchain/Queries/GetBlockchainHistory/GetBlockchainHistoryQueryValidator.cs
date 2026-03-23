@@ -11,5 +11,11 @@ public sealed class GetBlockchainHistoryQueryValidator : AbstractValidator<GetBl
 
         RuleFor(x => x.Time)
             .NotEmpty();
+
+        RuleFor(x => x.Page)
+            .GreaterThanOrEqualTo(1);
+
+        RuleFor(x => x.PageSize)
+            .InclusiveBetween(1, 100);
     }
 }
