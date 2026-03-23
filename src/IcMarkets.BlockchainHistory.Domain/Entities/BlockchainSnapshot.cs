@@ -1,4 +1,5 @@
 ﻿using IcMarkets.BlockchainHistory.Domain.Enums;
+using IcMarkets.BlockchainHistory.Domain.Exceptions;
 
 namespace IcMarkets.BlockchainHistory.Domain.Entities;
 
@@ -43,51 +44,10 @@ public sealed class BlockchainSnapshot
         int? lowFeePerKb = null,
         int? lastForkHeight = null,
         string? lastForkHash = null)
-    {
+    {     
         return new BlockchainSnapshot
         {
             Id = Guid.NewGuid(),
-            BlockchainType = blockchainType,
-            RawJson = rawJson,
-            CreatedAt = createdAt,
-            Height = height,
-            Hash = hash,
-            PeerCount = peerCount,
-            UnconfirmedCount = unconfirmedCount,
-            Time = time,
-            LatestUrl = latestUrl,
-            PreviousHash = previousHash,
-            PreviousUrl = previousUrl,
-            HighFeePerKb = highFeePerKb,
-            MediumFeePerKb = mediumFeePerKb,
-            LowFeePerKb = lowFeePerKb,
-            LastForkHeight = lastForkHeight,
-            LastForkHash = lastForkHash
-        };
-    }
-
-    public static BlockchainSnapshot LoadFromDb(
-        Guid id,
-        BlockchainType blockchainType,
-        string rawJson,
-        DateTimeOffset createdAt,
-        long? height,
-        string hash,
-        int? peerCount,
-        int? unconfirmedCount,
-        string time = "",
-        string latestUrl = "",
-        string previousHash = "",
-        string previousUrl = "",
-        int? highFeePerKb = null,
-        int? mediumFeePerKb = null,
-        int? lowFeePerKb = null,
-        int? lastForkHeight = null,
-        string? lastForkHash = null)
-    {
-        return new BlockchainSnapshot
-        {
-            Id = id,
             BlockchainType = blockchainType,
             RawJson = rawJson,
             CreatedAt = createdAt,
@@ -123,11 +83,13 @@ public sealed class BlockchainSnapshot
         int? lastForkHeight = null,
         string? lastForkHash = null)
     {
+        if (string.IsNullOrWhiteSpace(rawJson))
+            throw new DomainException("Raw JSON cannot be null or empty.");
+
         RawJson = rawJson;
         Height = height;
         PeerCount = peerCount;
         UnconfirmedCount = unconfirmedCount;
-
         HighFeePerKb = highFeePerKb;
         MediumFeePerKb = mediumFeePerKb;
         LowFeePerKb = lowFeePerKb;
