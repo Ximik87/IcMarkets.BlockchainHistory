@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using IcMarkets.BlockchainHistory.Application.Abstractions.External;
 using IcMarkets.BlockchainHistory.Application.Features.Blockchain.Commands;
-using IcMarkets.BlockchainHistory.Application.Features.Blockchain.Queries.GetHash;
+using IcMarkets.BlockchainHistory.Application.Features.Blockchain.Queries.GetBlockchainSnapshot;
 using IcMarkets.BlockchainHistory.Domain.Entities;
 using IcMarkets.BlockchainHistory.Domain.Enums;
 using Mediator;

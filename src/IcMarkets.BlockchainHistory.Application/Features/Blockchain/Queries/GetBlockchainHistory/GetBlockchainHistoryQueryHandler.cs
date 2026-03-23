@@ -12,19 +12,40 @@ public sealed record GetBlockchainHistoryQuery(BlockchainType BlockchainType, Da
 public sealed class GetBlockchainHistoryQueryHandler
     : IQueryHandler<GetBlockchainHistoryQuery, IReadOnlyList<BlockchainSnapshotResponse>>
 {
+    private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
     private readonly IBlockchainSnapshotRepository _repository;
+    private readonly IMemoryCache _cache;
+    private readonly SemaphoreSlim _lock = new(1, 1);
 
     public GetBlockchainHistoryQueryHandler(
         IBlockchainSnapshotRepository repository,
         IMemoryCache cache)
     {
         _repository = repository;
+        _cache = cache;
     }
 
     public async ValueTask<IReadOnlyList<BlockchainSnapshotResponse>> Handle(GetBlockchainHistoryQuery query,
         CancellationToken cancellationToken)
     {
+        var cacheKey = GetKey(query.BlockchainType, query.Time);
+
+        if (_cache.TryGetValue(cacheKey, out IReadOnlyList<BlockchainSnapshotResponse>? cached) 
+            && cached is not null)
+        {
+            return cached;
+        }
+
         var dbTime = new DateTimeOffset(query.Time, TimeSpan.Zero);
+
+        await _lock.WaitAsync(cancellationToken);
+
+        // Double-check after acquiring the lock to prevent cache stampede
+        if (_cache.TryGetValue(cacheKey, out IReadOnlyList<BlockchainSnapshotResponse>? cached2) 
+            && cached2 is not null)
+        {
+            return cached2;
+        }
 
         var snapshots = await _repository.GetHistoryAsync(query.BlockchainType, dbTime, cancellationToken);
 
@@ -40,12 +61,14 @@ public sealed class GetBlockchainHistoryQueryHandler
             UnconfirmedCount = s.UnconfirmedCount
         }).ToList();
 
+        _cache.Set(cacheKey, (IReadOnlyList<BlockchainSnapshotResponse>)responses, CacheDuration);
+
         return responses;
     }
 
-    private string GetKey(BlockchainType queryBlockchainType, DateTime createdAt)
+    private static string GetKey(BlockchainType blockchainType, DateTime createdAt)
     {
-        var type = queryBlockchainType.ToString().Trim().ToUpperInvariant();
+        var type = blockchainType.ToString().Trim().ToUpperInvariant();
         var utc = createdAt.ToUniversalTime();
 
         return $"history:{type}:{utc:O}";
