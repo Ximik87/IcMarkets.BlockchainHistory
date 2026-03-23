@@ -27,7 +27,7 @@ public static class DependencyInjection
         services.AddHttpClient();
         services.AddTransient<IBlockCypherClient, BlockCypherClient>();
         services.AddMediator(opt => opt.ServiceLifetime = ServiceLifetime.Scoped);
-        services.AddSingleton(typeof(Mediator.IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        services.AddTransient(typeof(Mediator.IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         services.AddValidatorsFromAssemblyContaining<IBlockchainSnapshotSynchronizer>();
         services.AddTransient<IBlockchainSnapshotSynchronizer, BlockchainSnapshotSynchronizer>();
 
