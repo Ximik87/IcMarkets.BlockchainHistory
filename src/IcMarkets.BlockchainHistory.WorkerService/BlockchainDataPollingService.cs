@@ -1,4 +1,4 @@
-using IcMarkets.BlockchainHistory.Application.Features.Blockchain;
+using IcMarkets.BlockchainHistory.Application.Abstractions;
 using IcMarkets.BlockchainHistory.Domain.Enums;
 
 namespace IcMarkets.BlockchainHistory.WorkerService;
