@@ -24,9 +24,7 @@ public sealed class BlockchainSnapshotsController : ControllerBase
     [HttpGet("{blockchainType}")]
     [ProducesResponseType(typeof(IReadOnlyList<BlockchainSnapshotResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetHistory(
-        string blockchainType,
-        CancellationToken ct)
+    public async Task<IActionResult> GetHistory(string blockchainType, DateTime? createAt, CancellationToken ct)
     {
         if (!Enum.TryParse<BlockchainType>(blockchainType, ignoreCase: true, out var parsed))
         {
@@ -34,7 +32,9 @@ public sealed class BlockchainSnapshotsController : ControllerBase
                               $"Valid values: {string.Join(", ", Enum.GetNames<BlockchainType>())}");
         }
 
-        var response = await _mediator.Send(new GetBlockchainHistoryQuery(parsed), ct);
+        createAt ??= DateTime.UtcNow.AddDays(-1);
+
+        var response = await _mediator.Send(new GetBlockchainHistoryQuery(parsed, createAt.Value), ct);
 
         return Ok(response);
     }

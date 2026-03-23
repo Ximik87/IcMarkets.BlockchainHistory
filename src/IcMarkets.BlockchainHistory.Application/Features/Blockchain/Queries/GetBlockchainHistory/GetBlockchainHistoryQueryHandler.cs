@@ -2,10 +2,11 @@
 using IcMarkets.BlockchainHistory.Application.DTOs;
 using IcMarkets.BlockchainHistory.Domain.Enums;
 using Mediator;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace IcMarkets.BlockchainHistory.Application.Features.Blockchain.Queries.GetBlockchainHistory;
 
-public sealed record GetBlockchainHistoryQuery(BlockchainType BlockchainType)
+public sealed record GetBlockchainHistoryQuery(BlockchainType BlockchainType, DateTime Time)
     : IQuery<IReadOnlyList<BlockchainSnapshotResponse>>;
 
 public sealed class GetBlockchainHistoryQueryHandler
@@ -13,21 +14,24 @@ public sealed class GetBlockchainHistoryQueryHandler
 {
     private readonly IBlockchainSnapshotRepository _repository;
 
-    public GetBlockchainHistoryQueryHandler(IBlockchainSnapshotRepository repository)
+    public GetBlockchainHistoryQueryHandler(
+        IBlockchainSnapshotRepository repository,
+        IMemoryCache cache)
     {
         _repository = repository;
     }
 
-    public async ValueTask<IReadOnlyList<BlockchainSnapshotResponse>> Handle(
-        GetBlockchainHistoryQuery query,
+    public async ValueTask<IReadOnlyList<BlockchainSnapshotResponse>> Handle(GetBlockchainHistoryQuery query,
         CancellationToken cancellationToken)
     {
-        var snapshots = await _repository.GetHistoryAsync(query.BlockchainType, cancellationToken);
+        var dbTime = new DateTimeOffset(query.Time, TimeSpan.Zero);
 
-        return snapshots.Select(s => new BlockchainSnapshotResponse
+        var snapshots = await _repository.GetHistoryAsync(query.BlockchainType, dbTime, cancellationToken);
+
+        var responses = snapshots.Select(s => new BlockchainSnapshotResponse
         {
             Id = s.Id,
-            BlockchainType = s.BlockchainType.ToString(),          
+            BlockchainType = s.BlockchainType.ToString(),
             RawJson = s.RawJson,
             CreatedAt = s.CreatedAt,
             Height = s.Height,
@@ -35,5 +39,15 @@ public sealed class GetBlockchainHistoryQueryHandler
             PeerCount = s.PeerCount,
             UnconfirmedCount = s.UnconfirmedCount
         }).ToList();
+
+        return responses;
+    }
+
+    private string GetKey(BlockchainType queryBlockchainType, DateTime createdAt)
+    {
+        var type = queryBlockchainType.ToString().Trim().ToUpperInvariant();
+        var utc = createdAt.ToUniversalTime();
+
+        return $"history:{type}:{utc:O}";
     }
 }

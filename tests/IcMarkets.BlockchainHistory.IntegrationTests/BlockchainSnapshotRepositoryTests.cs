@@ -54,12 +54,12 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
 
         // Act
         _repository.Add(snapshot);
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(_cancellationToken);
 
         // Assert
         var persisted = await _dbContext.BlockchainSnapshots
             .AsNoTracking()
-            .FirstOrDefaultAsync(s => s.Id == snapshot.Id);
+            .FirstOrDefaultAsync(s => s.Id == snapshot.Id, _cancellationToken);
         persisted.ShouldNotBeNull();
         persisted.BlockchainType.ShouldBe(BlockchainType.BitcoinMain);
         persisted.RawJson.ShouldBe("""{"name": "BTC.main"}""");
@@ -81,17 +81,17 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
             peerCount: 250,
             unconfirmedCount: 1000);
         _repository.Add(snapshot);
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(_cancellationToken);
 
         // Act
         snapshot.Update(snapshot.RawJson, height: 101, peerCount: 55, unconfirmedCount: 210);
         _repository.Update(snapshot);
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(_cancellationToken);
 
         // Assert
         var updated = await _dbContext.BlockchainSnapshots
             .AsNoTracking()
-            .FirstAsync(s => s.Id == snapshot.Id);
+            .FirstAsync(s => s.Id == snapshot.Id, _cancellationToken);
         updated.Height.ShouldBe(101);
         updated.PeerCount.ShouldBe(55);
         updated.UnconfirmedCount.ShouldBe(210);
@@ -110,7 +110,7 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
             unconfirmedCount: 5);
 
         _dbContext.BlockchainSnapshots.Add(snapshot1);
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(_cancellationToken);
 
         await Task.Delay(50); // ensure different CreatedAt
 
@@ -123,11 +123,11 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
             unconfirmedCount: 10);
 
         _dbContext.BlockchainSnapshots.Add(snapshot2);
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(_cancellationToken);
         _dbContext.ChangeTracker.Clear();
 
         // Act
-        var history = await _repository.GetHistoryAsync(BlockchainType.Litecoin, _cancellationToken);
+        var history = await _repository.GetHistoryAsync(BlockchainType.Litecoin, DateTimeOffset.UtcNow, _cancellationToken);
 
         // Assert
         history.Count.ShouldBe(2);
@@ -156,12 +156,12 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
             unconfirmedCount: 10);
 
         _dbContext.BlockchainSnapshots.AddRange(btcSnapshot, ethSnapshot);
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(_cancellationToken);
         _dbContext.ChangeTracker.Clear();
 
         // Act
-        var btcHistory = await _repository.GetHistoryAsync(BlockchainType.BitcoinMain, _cancellationToken);
-        var ethHistory = await _repository.GetHistoryAsync(BlockchainType.Ethereum, _cancellationToken);
+        var btcHistory = await _repository.GetHistoryAsync(BlockchainType.BitcoinMain, DateTimeOffset.UtcNow, _cancellationToken);
+        var ethHistory = await _repository.GetHistoryAsync(BlockchainType.Ethereum, DateTimeOffset.UtcNow, _cancellationToken);
 
         // Assert
         btcHistory.Count.ShouldBe(1);
@@ -175,7 +175,7 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
     public async Task GetHistoryAsync_ShouldReturnEmptyListWhenNoSnapshots()
     {
         // Act
-        var history = await _repository.GetHistoryAsync(BlockchainType.Dash, _cancellationToken);
+        var history = await _repository.GetHistoryAsync(BlockchainType.Dash, DateTimeOffset.UtcNow, _cancellationToken);
 
         // Assert
         history.ShouldBeEmpty();

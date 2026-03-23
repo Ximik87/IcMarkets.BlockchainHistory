@@ -26,10 +26,11 @@ internal sealed class BlockchainSnapshotRepository : IBlockchainSnapshotReposito
 
     public async Task<IReadOnlyList<BlockchainSnapshot>> GetHistoryAsync(
         BlockchainType blockchainType,
+        DateTimeOffset createAt,
         CancellationToken ct)
     {
         return await _dbContext.BlockchainSnapshots
-            .Where(s => s.BlockchainType == blockchainType)
+            .Where(s => s.BlockchainType == blockchainType && s.CreatedAt >= createAt)
             .OrderByDescending(s => s.CreatedAt)
             .AsNoTracking()
             .ToListAsync(ct);
