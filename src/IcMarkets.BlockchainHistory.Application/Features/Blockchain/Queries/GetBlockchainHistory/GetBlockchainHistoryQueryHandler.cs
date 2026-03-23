@@ -37,26 +37,7 @@ public sealed class GetBlockchainHistoryQueryHandler
             var (snapshots, totalCount) = await _repository.GetHistoryAsync(
                 query.BlockchainType, dbTime, query.Page, query.PageSize, cancellationToken);
 
-            var responses = snapshots.Select(s => new BlockchainSnapshotResponse
-            {
-                Id = s.Id,
-                BlockchainType = s.BlockchainType.ToString(),
-                RawJson = s.RawJson,
-                CreatedAt = s.CreatedAt,
-                Height = s.Height,
-                Hash = s.Hash,
-                PeerCount = s.PeerCount,
-                UnconfirmedCount = s.UnconfirmedCount,
-                Time = s.Time,
-                LatestUrl = s.LatestUrl,
-                PreviousHash = s.PreviousHash,
-                PreviousUrl = s.PreviousUrl,
-                HighFeePerKb = s.HighFeePerKb,
-                MediumFeePerKb = s.MediumFeePerKb,
-                LowFeePerKb = s.LowFeePerKb,
-                LastForkHeight = s.LastForkHeight,
-                LastForkHash = s.LastForkHash
-            }).ToList();
+            var responses = snapshots.Select(s => s.ToResponse()).ToList();
 
             return new PagedResponse<BlockchainSnapshotResponse>(responses, query.Page, query.PageSize, totalCount);
         });

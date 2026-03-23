@@ -1,5 +1,4 @@
 ﻿using IcMarkets.BlockchainHistory.Domain.Entities;
-using IcMarkets.BlockchainHistory.Domain.Entities;
 using IcMarkets.BlockchainHistory.Domain.Enums;
 
 namespace IcMarkets.BlockchainHistory.Application.Abstractions.Persistence;
