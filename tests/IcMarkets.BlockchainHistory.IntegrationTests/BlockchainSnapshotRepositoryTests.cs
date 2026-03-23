@@ -30,12 +30,12 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
         _repository = new BlockchainSnapshotRepository(_dbContext);
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await _dbContext.Database.MigrateAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _dbContext.DisposeAsync();
     }
@@ -131,7 +131,8 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
         _dbContext.ChangeTracker.Clear();
 
         // Act
-        var history = await _repository.GetHistoryAsync(BlockchainType.Litecoin, DateTimeOffset.UtcNow, _cancellationToken);
+        var history =
+            await _repository.GetHistoryAsync(BlockchainType.Litecoin, DateTimeOffset.UtcNow, _cancellationToken);
 
         // Assert
         history.Count.ShouldBe(2);
@@ -166,8 +167,10 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
         _dbContext.ChangeTracker.Clear();
 
         // Act
-        var btcHistory = await _repository.GetHistoryAsync(BlockchainType.BitcoinMain, DateTimeOffset.UtcNow, _cancellationToken);
-        var ethHistory = await _repository.GetHistoryAsync(BlockchainType.Ethereum, DateTimeOffset.UtcNow, _cancellationToken);
+        var btcHistory =
+            await _repository.GetHistoryAsync(BlockchainType.BitcoinMain, DateTimeOffset.UtcNow, _cancellationToken);
+        var ethHistory =
+            await _repository.GetHistoryAsync(BlockchainType.Ethereum, DateTimeOffset.UtcNow, _cancellationToken);
 
         // Assert
         btcHistory.Count.ShouldBe(1);

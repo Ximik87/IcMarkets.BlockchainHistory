@@ -135,7 +135,7 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
         snapshots[0].Hash.ShouldBe("hash_btc_1");
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         // Seed test data
         var date = DateTimeOffset.UtcNow.AddMinutes(-5);
@@ -172,7 +172,7 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
         await db.SaveChangesAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
