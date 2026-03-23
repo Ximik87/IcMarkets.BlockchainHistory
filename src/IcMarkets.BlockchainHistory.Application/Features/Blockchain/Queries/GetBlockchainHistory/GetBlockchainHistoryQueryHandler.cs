@@ -6,16 +6,15 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace IcMarkets.BlockchainHistory.Application.Features.Blockchain.Queries.GetBlockchainHistory;
 
-public sealed record GetBlockchainHistoryQuery(BlockchainType BlockchainType, DateTime Time)
-    : IQuery<IReadOnlyList<BlockchainSnapshotResponse>>;
+public sealed record GetBlockchainHistoryQuery(BlockchainType BlockchainType, DateTime Time, int Page = 1, int PageSize = 50)
+    : IQuery<PagedResponse<BlockchainSnapshotResponse>>;
 
 public sealed class GetBlockchainHistoryQueryHandler
-    : IQueryHandler<GetBlockchainHistoryQuery, IReadOnlyList<BlockchainSnapshotResponse>>
+    : IQueryHandler<GetBlockchainHistoryQuery, PagedResponse<BlockchainSnapshotResponse>>
 {
     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
     private readonly IBlockchainSnapshotRepository _repository;
     private readonly IMemoryCache _cache;
-    private readonly SemaphoreSlim _lock = new(1, 1);
 
     public GetBlockchainHistoryQueryHandler(
         IBlockchainSnapshotRepository repository,
@@ -25,30 +24,18 @@ public sealed class GetBlockchainHistoryQueryHandler
         _cache = cache;
     }
 
-    public async ValueTask<IReadOnlyList<BlockchainSnapshotResponse>> Handle(GetBlockchainHistoryQuery query,
+    public async ValueTask<PagedResponse<BlockchainSnapshotResponse>> Handle(GetBlockchainHistoryQuery query,
         CancellationToken cancellationToken)
     {
-        var cacheKey = GetKey(query.BlockchainType, query.Time);
+        var cacheKey = GetKey(query.BlockchainType, query.Time, query.Page, query.PageSize);
         var dbTime = new DateTimeOffset(query.Time, TimeSpan.Zero);
 
-        if (_cache.TryGetValue(cacheKey, out IReadOnlyList<BlockchainSnapshotResponse>? cached)
-            && cached is not null)
+        var result = await _cache.GetOrCreateAsync(cacheKey, async entry =>
         {
-            return cached;
-        }
+            entry.AbsoluteExpirationRelativeToNow = CacheDuration;
 
-        await _lock.WaitAsync(cancellationToken);
-
-        try
-        {
-            // Double-check after acquiring the lock to prevent cache stampede
-            if (_cache.TryGetValue(cacheKey, out IReadOnlyList<BlockchainSnapshotResponse>? cached2)
-                && cached2 is not null)
-            {
-                return cached2;
-            }
-
-            var snapshots = await _repository.GetHistoryAsync(query.BlockchainType, dbTime, cancellationToken);
+            var (snapshots, totalCount) = await _repository.GetHistoryAsync(
+                query.BlockchainType, dbTime, query.Page, query.PageSize, cancellationToken);
 
             var responses = snapshots.Select(s => new BlockchainSnapshotResponse
             {
@@ -71,21 +58,17 @@ public sealed class GetBlockchainHistoryQueryHandler
                 LastForkHash = s.LastForkHash
             }).ToList();
 
-            _cache.Set<IReadOnlyList<BlockchainSnapshotResponse>>(cacheKey, responses, CacheDuration);
+            return new PagedResponse<BlockchainSnapshotResponse>(responses, query.Page, query.PageSize, totalCount);
+        });
 
-            return responses;
-        }
-        finally
-        {
-            _lock.Release();
-        }
+        return result!;
     }
 
-    private static string GetKey(BlockchainType blockchainType, DateTime createdAt)
+    private static string GetKey(BlockchainType blockchainType, DateTime createdAt, int page, int pageSize)
     {
         var type = blockchainType.ToString().Trim().ToUpperInvariant();
         var utc = createdAt.ToUniversalTime();
 
-        return $"history:{type}:{utc:O}";
+        return $"history:{type}:{utc:O}:p{page}:s{pageSize}";
     }
 }

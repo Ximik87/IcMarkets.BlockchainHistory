@@ -44,10 +44,11 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        var snapshots = await response.Content.ReadFromJsonAsync<List<BlockchainSnapshotResponse>>();
-        snapshots.ShouldNotBeNull();
-        snapshots.Count.ShouldBe(2);
-        snapshots.ShouldAllBe(s => s.BlockchainType == "Ethereum");
+        var paged = await response.Content.ReadFromJsonAsync<PagedResponse<BlockchainSnapshotResponse>>();
+        paged.ShouldNotBeNull();
+        paged.Items.Count.ShouldBe(2);
+        paged.TotalCount.ShouldBe(2);
+        paged.Items.ShouldAllBe(s => s.BlockchainType == "Ethereum");
     }
 
     [Fact]
@@ -58,9 +59,9 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        var snapshots = await response.Content.ReadFromJsonAsync<List<BlockchainSnapshotResponse>>();
-        snapshots.ShouldNotBeNull();
-        snapshots.Count.ShouldBe(2);
+        var paged = await response.Content.ReadFromJsonAsync<PagedResponse<BlockchainSnapshotResponse>>();
+        paged.ShouldNotBeNull();
+        paged.Items.Count.ShouldBe(2);
     }
 
     [Fact]
@@ -81,9 +82,10 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        var snapshots = await response.Content.ReadFromJsonAsync<List<BlockchainSnapshotResponse>>();
-        snapshots.ShouldNotBeNull();
-        snapshots.ShouldBeEmpty();
+        var paged = await response.Content.ReadFromJsonAsync<PagedResponse<BlockchainSnapshotResponse>>();
+        paged.ShouldNotBeNull();
+        paged.Items.ShouldBeEmpty();
+        paged.TotalCount.ShouldBe(0);
     }
 
     [Fact]
@@ -128,11 +130,11 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        var snapshots = await response.Content.ReadFromJsonAsync<List<BlockchainSnapshotResponse>>();
-        snapshots.ShouldNotBeNull();
-        snapshots.Count.ShouldBe(1);
-        snapshots[0].Height.ShouldBe(800000);
-        snapshots[0].Hash.ShouldBe("hash_btc_1");
+        var paged = await response.Content.ReadFromJsonAsync<PagedResponse<BlockchainSnapshotResponse>>();
+        paged.ShouldNotBeNull();
+        paged.Items.Count.ShouldBe(1);
+        paged.Items[0].Height.ShouldBe(800000);
+        paged.Items[0].Hash.ShouldBe("hash_btc_1");
     }
 
     public async ValueTask InitializeAsync()

@@ -29,8 +29,8 @@ public sealed class GetBlockchainHistoryQueryHandlerTests : IDisposable
             BlockchainType.Ethereum, "{}", 100, "abc123", 10, 5, now);
         _repositoryMock
             .Setup(r => r.GetHistoryAsync(BlockchainType.Ethereum, It.IsAny<DateTimeOffset>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<BlockchainSnapshot> { snapshot });
+                It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((new List<BlockchainSnapshot> { snapshot }, 1));
         var query = new GetBlockchainHistoryQuery(BlockchainType.Ethereum, now.UtcDateTime);
 
         // Act
@@ -38,14 +38,16 @@ public sealed class GetBlockchainHistoryQueryHandlerTests : IDisposable
 
         // Assert
         result.ShouldNotBeNull();
-        result.Count.ShouldBe(1);
-        result[0].BlockchainType.ShouldBe(nameof(BlockchainType.Ethereum));
-        result[0].Height.ShouldBe(100);
-        result[0].Hash.ShouldBe("abc123");
-        result[0].PeerCount.ShouldBe(10);
-        result[0].UnconfirmedCount.ShouldBe(5);
+        result.Items.Count.ShouldBe(1);
+        result.TotalCount.ShouldBe(1);
+        result.Items[0].BlockchainType.ShouldBe(nameof(BlockchainType.Ethereum));
+        result.Items[0].Height.ShouldBe(100);
+        result.Items[0].Hash.ShouldBe("abc123");
+        result.Items[0].PeerCount.ShouldBe(10);
+        result.Items[0].UnconfirmedCount.ShouldBe(5);
         _repositoryMock.Verify(
-            r => r.GetHistoryAsync(BlockchainType.Ethereum, It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>()),
+            r => r.GetHistoryAsync(BlockchainType.Ethereum, It.IsAny<DateTimeOffset>(),
+                It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
@@ -56,8 +58,8 @@ public sealed class GetBlockchainHistoryQueryHandlerTests : IDisposable
         var now = DateTimeOffset.UtcNow;
         _repositoryMock
             .Setup(r => r.GetHistoryAsync(BlockchainType.Ethereum, It.IsAny<DateTimeOffset>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<BlockchainSnapshot>());
+                It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((new List<BlockchainSnapshot>(), 0));
         var query = new GetBlockchainHistoryQuery(BlockchainType.Ethereum, now.UtcDateTime);
 
         // Act
@@ -65,7 +67,8 @@ public sealed class GetBlockchainHistoryQueryHandlerTests : IDisposable
 
         // Assert
         result.ShouldNotBeNull();
-        result.ShouldBeEmpty();
+        result.Items.ShouldBeEmpty();
+        result.TotalCount.ShouldBe(0);
     }
 
     [Fact]
@@ -79,12 +82,12 @@ public sealed class GetBlockchainHistoryQueryHandlerTests : IDisposable
             BlockchainType.BitcoinMain, "{}", 200, "btc456", 20, 10, now);
         _repositoryMock
             .Setup(r => r.GetHistoryAsync(BlockchainType.Ethereum, It.IsAny<DateTimeOffset>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<BlockchainSnapshot> { ethSnapshot });
+                It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((new List<BlockchainSnapshot> { ethSnapshot }, 1));
         _repositoryMock
             .Setup(r => r.GetHistoryAsync(BlockchainType.BitcoinMain, It.IsAny<DateTimeOffset>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<BlockchainSnapshot> { btcSnapshot });
+                It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((new List<BlockchainSnapshot> { btcSnapshot }, 1));
         var ethQuery = new GetBlockchainHistoryQuery(BlockchainType.Ethereum, now.UtcDateTime);
         var btcQuery = new GetBlockchainHistoryQuery(BlockchainType.BitcoinMain, now.UtcDateTime);
 
@@ -93,16 +96,18 @@ public sealed class GetBlockchainHistoryQueryHandlerTests : IDisposable
         var btcResult = await _handler.Handle(btcQuery, _token);
 
         // Assert
-        ethResult.Count.ShouldBe(1);
-        ethResult[0].Hash.ShouldBe("eth123");
-        btcResult.Count.ShouldBe(1);
-        btcResult[0].Hash.ShouldBe("btc456");
+        ethResult.Items.Count.ShouldBe(1);
+        ethResult.Items[0].Hash.ShouldBe("eth123");
+        btcResult.Items.Count.ShouldBe(1);
+        btcResult.Items[0].Hash.ShouldBe("btc456");
         _repositoryMock.Verify(
-            r => r.GetHistoryAsync(BlockchainType.Ethereum, It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>()),
+            r => r.GetHistoryAsync(BlockchainType.Ethereum, It.IsAny<DateTimeOffset>(),
+                It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()),
             Times.Once);
         _repositoryMock.Verify(
             r => r.GetHistoryAsync(BlockchainType.BitcoinMain, It.IsAny<DateTimeOffset>(),
-                It.IsAny<CancellationToken>()), Times.Once);
+                It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Fact]
@@ -114,15 +119,15 @@ public sealed class GetBlockchainHistoryQueryHandlerTests : IDisposable
             BlockchainType.Ethereum, "{\"key\":\"value\"}", 999, "hash999", 42, 7, now);
         _repositoryMock
             .Setup(r => r.GetHistoryAsync(BlockchainType.Ethereum, It.IsAny<DateTimeOffset>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<BlockchainSnapshot> { snapshot });
+                It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((new List<BlockchainSnapshot> { snapshot }, 1));
         var query = new GetBlockchainHistoryQuery(BlockchainType.Ethereum, now.UtcDateTime);
 
         // Act
         var result = await _handler.Handle(query, _token);
 
         // Assert
-        var response = result.ShouldHaveSingleItem();
+        var response = result.Items.ShouldHaveSingleItem();
         response.Id.ShouldBe(snapshot.Id);
         response.BlockchainType.ShouldBe("Ethereum");
         response.RawJson.ShouldBe("{\"key\":\"value\"}");

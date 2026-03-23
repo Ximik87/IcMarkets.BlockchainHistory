@@ -134,11 +134,12 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
         _dbContext.ChangeTracker.Clear();
 
         // Act
-        var history =
-            await _repository.GetHistoryAsync(BlockchainType.Litecoin, DateTimeOffset.UtcNow, _cancellationToken);
+        var (history, totalCount) =
+            await _repository.GetHistoryAsync(BlockchainType.Litecoin, DateTimeOffset.UtcNow, 1, 50, _cancellationToken);
 
         // Assert
         history.Count.ShouldBe(2);
+        totalCount.ShouldBe(2);
         history[0].Hash.ShouldBe("ltc_hash_2");
         history[1].Hash.ShouldBe("ltc_hash_1");
     }
@@ -170,10 +171,10 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
         _dbContext.ChangeTracker.Clear();
 
         // Act
-        var btcHistory =
-            await _repository.GetHistoryAsync(BlockchainType.BitcoinMain, DateTimeOffset.UtcNow, _cancellationToken);
-        var ethHistory =
-            await _repository.GetHistoryAsync(BlockchainType.Ethereum, DateTimeOffset.UtcNow, _cancellationToken);
+        var (btcHistory, _) =
+            await _repository.GetHistoryAsync(BlockchainType.BitcoinMain, DateTimeOffset.UtcNow, 1, 50, _cancellationToken);
+        var (ethHistory, _) =
+            await _repository.GetHistoryAsync(BlockchainType.Ethereum, DateTimeOffset.UtcNow, 1, 50, _cancellationToken);
 
         // Assert
         btcHistory.Count.ShouldBe(1);
@@ -187,10 +188,11 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
     public async Task GetHistoryAsync_ShouldReturnEmptyListWhenNoSnapshots()
     {
         // Act
-        var history = await _repository.GetHistoryAsync(BlockchainType.Dash, DateTimeOffset.UtcNow, _cancellationToken);
+        var (history, totalCount) = await _repository.GetHistoryAsync(BlockchainType.Dash, DateTimeOffset.UtcNow, 1, 50, _cancellationToken);
 
         // Assert
         history.ShouldBeEmpty();
+        totalCount.ShouldBe(0);
     }
 
     [Fact(Skip = "fix later")]

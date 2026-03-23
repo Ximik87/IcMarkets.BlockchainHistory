@@ -1,4 +1,5 @@
 using IcMarkets.BlockchainHistory.Application.DTOs;
+using IcMarkets.BlockchainHistory.Application.DTOs;
 using IcMarkets.BlockchainHistory.Application.Features.Blockchain.Queries.GetBlockchainHistory;
 using IcMarkets.BlockchainHistory.Application.Features.Blockchain.Queries.GetLatestBlockchainSnapshot;
 using IcMarkets.BlockchainHistory.Domain.Enums;
@@ -22,9 +23,14 @@ public sealed class BlockchainSnapshotsController : ControllerBase
     /// Gets the history of blockchain snapshots for a specific blockchain type, ordered by CreatedAt descending.
     /// </summary>
     [HttpGet("{blockchainType}")]
-    [ProducesResponseType(typeof(IReadOnlyList<BlockchainSnapshotResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PagedResponse<BlockchainSnapshotResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetHistory(string blockchainType, DateTime? createAt, CancellationToken ct)
+    public async Task<IActionResult> GetHistory(
+        string blockchainType,
+        DateTime? createAt,
+        int page = 1,
+        int pageSize = 50,
+        CancellationToken ct = default)
     {
         if (!Enum.TryParse<BlockchainType>(blockchainType, ignoreCase: true, out var parsed))
         {
@@ -34,7 +40,8 @@ public sealed class BlockchainSnapshotsController : ControllerBase
 
         createAt ??= DateTime.UtcNow.AddDays(-1);
 
-        var response = await _mediator.Send(new GetBlockchainHistoryQuery(parsed, createAt.Value), ct);
+        var response = await _mediator.Send(
+            new GetBlockchainHistoryQuery(parsed, createAt.Value, page, pageSize), ct);
 
         return Ok(response);
     }
