@@ -6,14 +6,20 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        var builder = Host.CreateApplicationBuilder(args);
+        var builder = WebApplication.CreateBuilder(args);
 
+        // Add services to the container.
         builder.Services.AddInfrastructure(builder.Configuration);
-        builder.Services.AddHostedService<BlockchainDataPollingService>();        
+        builder.Services.AddMemoryCache();
+        builder.Services.AddHostedService<BlockchainDataPollingService>();
 
-        var host = builder.Build();
+        builder.Services.AddHealthChecks()
+            .AddNpgSql(builder.Configuration.GetConnectionString("Postgres") ?? string.Empty);
 
+        var app = builder.Build();
 
-        host.Run();
+        app.MapHealthChecks("/health");
+       
+        app.Run();
     }
 }
