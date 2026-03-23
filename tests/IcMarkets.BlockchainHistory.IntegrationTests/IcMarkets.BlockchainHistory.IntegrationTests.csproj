@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="coverlet.collector" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
@@ -19,8 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference
-      Include="..\..\src\IcMarkets.BlockchainHistory.Infrastructure\IcMarkets.BlockchainHistory.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\IcMarkets.BlockchainHistory.Infrastructure\IcMarkets.BlockchainHistory.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

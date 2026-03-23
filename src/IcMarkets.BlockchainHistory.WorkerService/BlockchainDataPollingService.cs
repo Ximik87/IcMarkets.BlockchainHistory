@@ -49,7 +49,7 @@ public sealed class BlockchainDataPollingService : BackgroundService
                 await coordinator.FetchAndStoreAsync(blockchainType, ct);
                 _logger.LogInformation("Fetched {BlockchainType}", blockchainType);
 
-                // small delay becase api have rate limits
+                // small delay because api have rate limits
                 await Task.Delay(800, ct);
             }
             catch (Exception ex)

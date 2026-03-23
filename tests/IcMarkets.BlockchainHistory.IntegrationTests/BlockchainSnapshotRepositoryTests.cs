@@ -15,7 +15,7 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
     public BlockchainSnapshotRepositoryTests()
     {
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(GetWorkerServiceDirectory())
+            .SetBasePath(AppContext.BaseDirectory)
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
 
@@ -31,21 +31,12 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        await _dbContext.Database.EnsureCreatedAsync();
+        await _dbContext.Database.MigrateAsync();
     }
 
     public async Task DisposeAsync()
     {
         await _dbContext.DisposeAsync();
-    }
-
-    private static string GetWorkerServiceDirectory()
-    {
-        var dir = new DirectoryInfo(AppContext.BaseDirectory);
-        while (dir is not null && dir.Name != "tests")
-            dir = dir.Parent;
-
-        return Path.Combine(dir!.Parent!.FullName, "src", "IcMarkets.BlockchainHistory.WorkerService");
     }
 
     [Fact]
@@ -90,7 +81,7 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
             unconfirmedCount: 1000);
         _repository.Add(snapshot);
         await _dbContext.SaveChangesAsync();
-       
+
         // Act
         snapshot.Update(snapshot.RawJson, height: 101, peerCount: 55, unconfirmedCount: 210);
         _repository.Update(snapshot);
