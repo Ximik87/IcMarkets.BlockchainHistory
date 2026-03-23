@@ -17,13 +17,16 @@ public sealed class BlockchainSnapshotSynchronizer : IBlockchainSnapshotSynchron
 {
     private readonly IBlockCypherClient _client;
     private readonly IMediator _mediator;
+    private readonly TimeProvider _timeProvider; 
 
     public BlockchainSnapshotSynchronizer(
         IBlockCypherClient client,
-        IMediator mediator)
+        IMediator mediator, 
+        TimeProvider timeProvider)
     {
         _client = client;
         _mediator = mediator;
+        _timeProvider = timeProvider;
     }
 
     public async Task FetchAndStoreAsync(BlockchainType blockchainType, CancellationToken ct)
@@ -36,7 +39,8 @@ public sealed class BlockchainSnapshotSynchronizer : IBlockchainSnapshotSynchron
             data.Height,
             data.Hash,
             data.PeerCount,
-            data.UnconfirmedCount);
+            data.UnconfirmedCount,
+            _timeProvider.GetUtcNow());
 
         var exist = await _mediator.Send(new GetBlockchainSnapshotQuery(snapshot.Hash), ct);
 

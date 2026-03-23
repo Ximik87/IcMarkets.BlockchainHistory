@@ -8,20 +8,25 @@ namespace IcMarkets.BlockchainHistory.FuncTests;
 
 public sealed class BlockchainHistoryWebAppFactory : WebApplicationFactory<Api.Program>
 {
+    private readonly string _dbName = "FuncTestsDb_" + Guid.NewGuid();
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureServices(services =>
         {
-            // Remove the existing DbContext registration
-            var descriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
+            // Remove all DbContext-related registrations
+            var descriptorsToRemove = services
+                .Where(d => d.ServiceType == typeof(DbContextOptions<AppDbContext>)
+                            || d.ServiceType == typeof(DbContextOptions)
+                            || d.ServiceType == typeof(AppDbContext))
+                .ToList();
 
-            if (descriptor is not null)
+            foreach (var descriptor in descriptorsToRemove)
                 services.Remove(descriptor);
 
             // Add in-memory database for testing
             services.AddDbContext<AppDbContext>(options =>
-                options.UseInMemoryDatabase("FuncTestsDb_" + Guid.NewGuid()));
+                options.UseInMemoryDatabase(_dbName));
         });
 
         builder.UseEnvironment("Development");

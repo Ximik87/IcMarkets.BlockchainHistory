@@ -14,7 +14,8 @@ public sealed class SaveBlockchainSnapshotCommandValidatorTests
     {
         // Arrange
         var snapshot = BlockchainSnapshot.Create(
-            BlockchainType.Ethereum, "{}", 100, "abc123", 10, 5);
+            BlockchainType.Ethereum, "{}", 100, "abc123", 10, 5,
+            DateTimeOffset.UtcNow);
 
         var command = new SaveBlockchainSnapshotCommand(snapshot);
 
@@ -43,7 +44,8 @@ public sealed class SaveBlockchainSnapshotCommandValidatorTests
     {
         // Arrange
         var snapshot = BlockchainSnapshot.Create(
-            BlockchainType.Ethereum, "{}", 100, string.Empty, 10, 5);
+            BlockchainType.Ethereum, "{}", 100, string.Empty, 10, 5,
+            DateTimeOffset.UtcNow);
 
         var command = new SaveBlockchainSnapshotCommand(snapshot);
 
@@ -59,7 +61,8 @@ public sealed class SaveBlockchainSnapshotCommandValidatorTests
     {
         // Arrange
         var snapshot = BlockchainSnapshot.Create(
-            BlockchainType.Ethereum, string.Empty, 100, "abc123", 10, 5);
+            BlockchainType.Ethereum, string.Empty, 100, "abc123", 10, 5,
+            DateTimeOffset.UtcNow);
 
         var command = new SaveBlockchainSnapshotCommand(snapshot);
 

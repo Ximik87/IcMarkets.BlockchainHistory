@@ -50,7 +50,8 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
             height: 800_000,
             hash: "abc123",
             peerCount: 250,
-            unconfirmedCount: 1000);
+            unconfirmedCount: 1000,
+            DateTimeOffset.UtcNow);
 
         // Act
         _repository.Add(snapshot);
@@ -79,7 +80,8 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
             height: 800_000,
             hash: "abc123",
             peerCount: 250,
-            unconfirmedCount: 1000);
+            unconfirmedCount: 1000,
+            DateTimeOffset.UtcNow);
         _repository.Add(snapshot);
         await _dbContext.SaveChangesAsync(_cancellationToken);
 
@@ -107,7 +109,8 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
             height: 1,
             hash: "ltc_hash_1",
             peerCount: 10,
-            unconfirmedCount: 5);
+            unconfirmedCount: 5,
+            DateTimeOffset.UtcNow);
 
         _dbContext.BlockchainSnapshots.Add(snapshot1);
         await _dbContext.SaveChangesAsync(_cancellationToken);
@@ -120,7 +123,8 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
             height: 2,
             hash: "ltc_hash_2",
             peerCount: 20,
-            unconfirmedCount: 10);
+            unconfirmedCount: 10,
+            DateTimeOffset.UtcNow);
 
         _dbContext.BlockchainSnapshots.Add(snapshot2);
         await _dbContext.SaveChangesAsync(_cancellationToken);
@@ -145,7 +149,8 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
             height: 1,
             hash: "btc_filter_hash",
             peerCount: 10,
-            unconfirmedCount: 5);
+            unconfirmedCount: 5,
+            DateTimeOffset.UtcNow);
 
         var ethSnapshot = BlockchainSnapshot.Create(
             BlockchainType.Ethereum,
@@ -153,7 +158,8 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
             height: 2,
             hash: "eth_filter_hash",
             peerCount: 20,
-            unconfirmedCount: 10);
+            unconfirmedCount: 10,
+            DateTimeOffset.UtcNow);
 
         _dbContext.BlockchainSnapshots.AddRange(btcSnapshot, ethSnapshot);
         await _dbContext.SaveChangesAsync(_cancellationToken);
@@ -191,7 +197,8 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
             height: 100,
             hash: "dash_old",
             peerCount: 5,
-            unconfirmedCount: 3);
+            unconfirmedCount: 3,
+            DateTimeOffset.UtcNow);
 
         _dbContext.BlockchainSnapshots.Add(older);
         await _dbContext.SaveChangesAsync();
@@ -204,7 +211,8 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
             height: 200,
             hash: "dash_new",
             peerCount: 10,
-            unconfirmedCount: 6);
+            unconfirmedCount: 6,
+            DateTimeOffset.UtcNow);
 
         _dbContext.BlockchainSnapshots.Add(newer);
         await _dbContext.SaveChangesAsync();
@@ -239,7 +247,8 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
             height: 500,
             hash: "unique_hash_123",
             peerCount: 100,
-            unconfirmedCount: 50);
+            unconfirmedCount: 50,
+            DateTimeOffset.UtcNow);
 
         _dbContext.BlockchainSnapshots.Add(snapshot);
         await _dbContext.SaveChangesAsync();

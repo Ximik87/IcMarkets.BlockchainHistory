@@ -21,14 +21,15 @@ public sealed class BlockchainSnapshot
         long? height,
         string hash,
         int? peerCount,
-        int? unconfirmedCount)
+        int? unconfirmedCount,
+        DateTimeOffset createdAt)
     {
         return new BlockchainSnapshot
         {
             Id = Guid.NewGuid(),
             BlockchainType = blockchainType,          
             RawJson = rawJson,
-            CreatedAt = DateTimeOffset.UtcNow,
+            CreatedAt = createdAt,
             Height = height,
             Hash = hash,
             PeerCount = peerCount,

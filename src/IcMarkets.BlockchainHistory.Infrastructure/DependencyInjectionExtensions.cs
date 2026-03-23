@@ -11,12 +11,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace IcMarkets.BlockchainHistory.Infrastructure;
 
-public static class DependencyInjection
+public static class DependencyInjectionExtensions
 {
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        services.AddSingleton(TimeProvider.System);
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("Postgres")));
 

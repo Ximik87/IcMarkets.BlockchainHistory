@@ -20,46 +20,6 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
         _client = factory.CreateClient();
     }
 
-    public async Task InitializeAsync()
-    {
-        // Seed test data
-        using var scope = _factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        await db.Database.EnsureCreatedAsync();
-
-        db.BlockchainSnapshots.AddRange(
-            BlockchainSnapshot.Create(
-                BlockchainType.Ethereum,               
-                """{"name":"ETH.main","height":100}""",
-                height: 100,
-                hash: "hash_eth_1",
-                peerCount: 50,
-                unconfirmedCount: 10),
-            BlockchainSnapshot.Create(
-                BlockchainType.Ethereum,               
-                """{"name":"ETH.main","height":200}""",
-                height: 200,
-                hash: "hash_eth_2",
-                peerCount: 55,
-                unconfirmedCount: 12),
-            BlockchainSnapshot.Create(
-                BlockchainType.BitcoinMain,             
-                """{"name":"BTC.main","height":800000}""",
-                height: 800000,
-                hash: "hash_btc_1",
-                peerCount: 300,
-                unconfirmedCount: 1000));
-
-        await db.SaveChangesAsync();
-    }
-
-    public async Task DisposeAsync()
-    {
-        using var scope = _factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        await db.Database.EnsureDeletedAsync();
-    }
-
     [Fact]
     public async Task GetTypes_ReturnsAllBlockchainTypes()
     {
@@ -68,7 +28,6 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-
         var types = await response.Content.ReadFromJsonAsync<List<string>>();
         types.ShouldNotBeNull();
         types.ShouldContain("Ethereum");
@@ -77,7 +36,7 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
         types.ShouldContain("Litecoin");
     }
 
-    [Fact(Skip = "fix later")]
+    [Fact]
     public async Task GetHistory_ValidType_ReturnsSnapshots()
     {
         // Act
@@ -85,14 +44,13 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-
         var snapshots = await response.Content.ReadFromJsonAsync<List<BlockchainSnapshotResponse>>();
         snapshots.ShouldNotBeNull();
         snapshots.Count.ShouldBe(2);
         snapshots.ShouldAllBe(s => s.BlockchainType == "Ethereum");
     }
 
-    [Fact(Skip = "fix later")]
+    [Fact]
     public async Task GetHistory_ValidTypeCaseInsensitive_ReturnsSnapshots()
     {
         // Act
@@ -100,7 +58,6 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-
         var snapshots = await response.Content.ReadFromJsonAsync<List<BlockchainSnapshotResponse>>();
         snapshots.ShouldNotBeNull();
         snapshots.Count.ShouldBe(2);
@@ -124,13 +81,12 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-
         var snapshots = await response.Content.ReadFromJsonAsync<List<BlockchainSnapshotResponse>>();
         snapshots.ShouldNotBeNull();
         snapshots.ShouldBeEmpty();
     }
 
-    [Fact(Skip = "fix later")]
+    [Fact]
     public async Task GetLatest_ValidType_ReturnsLatestSnapshot()
     {
         // Act
@@ -138,7 +94,6 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-
         var snapshot = await response.Content.ReadFromJsonAsync<BlockchainSnapshotResponse>();
         snapshot.ShouldNotBeNull();
         snapshot.BlockchainType.ShouldBe("Ethereum");
@@ -165,7 +120,7 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
-    [Fact(Skip = "fix later")]
+    [Fact]
     public async Task GetHistory_BitcoinMain_ReturnsCorrectData()
     {
         // Act
@@ -173,11 +128,54 @@ public sealed class BlockchainSnapshotsControllerTests : IClassFixture<Blockchai
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-
         var snapshots = await response.Content.ReadFromJsonAsync<List<BlockchainSnapshotResponse>>();
         snapshots.ShouldNotBeNull();
         snapshots.Count.ShouldBe(1);
         snapshots[0].Height.ShouldBe(800000);
         snapshots[0].Hash.ShouldBe("hash_btc_1");
+    }
+
+    public async Task InitializeAsync()
+    {
+        // Seed test data
+        var date = DateTimeOffset.UtcNow.AddMinutes(-5);
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await db.Database.EnsureCreatedAsync();
+
+        db.BlockchainSnapshots.AddRange(
+            BlockchainSnapshot.Create(
+                BlockchainType.Ethereum,
+                """{"name":"ETH.main","height":100}""",
+                height: 100,
+                hash: "hash_eth_1",
+                peerCount: 50,
+                unconfirmedCount: 10,
+                date),
+            BlockchainSnapshot.Create(
+                BlockchainType.Ethereum,
+                """{"name":"ETH.main","height":200}""",
+                height: 200,
+                hash: "hash_eth_2",
+                peerCount: 55,
+                unconfirmedCount: 12,
+                date.AddMinutes(1)),
+            BlockchainSnapshot.Create(
+                BlockchainType.BitcoinMain,
+                """{"name":"BTC.main","height":800000}""",
+                height: 800000,
+                hash: "hash_btc_1",
+                peerCount: 300,
+                unconfirmedCount: 1000,
+                date));
+
+        await db.SaveChangesAsync();
+    }
+
+    public async Task DisposeAsync()
+    {
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await db.Database.EnsureDeletedAsync();
     }
 }
