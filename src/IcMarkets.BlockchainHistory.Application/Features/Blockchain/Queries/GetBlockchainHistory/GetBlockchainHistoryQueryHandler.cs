@@ -59,7 +59,16 @@ public sealed class GetBlockchainHistoryQueryHandler
                 Height = s.Height,
                 Hash = s.Hash,
                 PeerCount = s.PeerCount,
-                UnconfirmedCount = s.UnconfirmedCount
+                UnconfirmedCount = s.UnconfirmedCount,
+                Time = s.Time,
+                LatestUrl = s.LatestUrl,
+                PreviousHash = s.PreviousHash,
+                PreviousUrl = s.PreviousUrl,
+                HighFeePerKb = s.HighFeePerKb,
+                MediumFeePerKb = s.MediumFeePerKb,
+                LowFeePerKb = s.LowFeePerKb,
+                LastForkHeight = s.LastForkHeight,
+                LastForkHash = s.LastForkHash
             }).ToList();
 
             _cache.Set<IReadOnlyList<BlockchainSnapshotResponse>>(cacheKey, responses, CacheDuration);

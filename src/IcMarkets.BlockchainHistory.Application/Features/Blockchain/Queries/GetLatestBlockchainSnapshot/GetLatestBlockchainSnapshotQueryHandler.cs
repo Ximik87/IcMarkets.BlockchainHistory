@@ -62,7 +62,16 @@ public sealed class GetLatestBlockchainSnapshotQueryHandler : IQueryHandler<GetL
                 Height = snapshot.Height,
                 Hash = snapshot.Hash,
                 PeerCount = snapshot.PeerCount,
-                UnconfirmedCount = snapshot.UnconfirmedCount
+                UnconfirmedCount = snapshot.UnconfirmedCount,
+                Time = snapshot.Time,
+                LatestUrl = snapshot.LatestUrl,
+                PreviousHash = snapshot.PreviousHash,
+                PreviousUrl = snapshot.PreviousUrl,
+                HighFeePerKb = snapshot.HighFeePerKb,
+                MediumFeePerKb = snapshot.MediumFeePerKb,
+                LowFeePerKb = snapshot.LowFeePerKb,
+                LastForkHeight = snapshot.LastForkHeight,
+                LastForkHash = snapshot.LastForkHash
             };
 
             _cache.Set<BlockchainSnapshotResponse?>(cacheKey, response, CacheDuration);

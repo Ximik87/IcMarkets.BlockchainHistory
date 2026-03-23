@@ -36,13 +36,36 @@ public sealed class BlockchainSnapshotSynchronizer : IBlockchainSnapshotSynchron
             data.Hash,
             data.PeerCount,
             data.UnconfirmedCount,
-            _timeProvider.GetUtcNow());
+            _timeProvider.GetUtcNow(),
+            data.Time,
+            data.LatestUrl,
+            data.PreviousHash,
+            data.PreviousUrl,
+            data.HighFeePerKb,
+            data.MediumFeePerKb,
+            data.LowFeePerKb,
+            data.LastForkHeight,
+            data.LastForkHash);
 
         var exist = await _mediator.Send(new GetBlockchainSnapshotQuery(snapshot.Hash), ct);
 
         if (exist is not null)
         {
-            exist.Update(rawJson, data.Height, data.PeerCount, data.UnconfirmedCount);
+            exist.Update(
+                rawJson,
+                data.Height,
+                data.PeerCount,
+                data.UnconfirmedCount,
+                _timeProvider.GetUtcNow(),
+                data.Time,
+                data.LatestUrl,
+                data.PreviousHash,
+                data.PreviousUrl,
+                data.HighFeePerKb,
+                data.MediumFeePerKb,
+                data.LowFeePerKb,
+                data.LastForkHeight,
+                data.LastForkHash);
             await _mediator.Send(new UpdateBlockchainSnapshotCommand(exist), ct);
         }
         else

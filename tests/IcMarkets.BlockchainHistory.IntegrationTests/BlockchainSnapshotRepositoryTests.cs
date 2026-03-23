@@ -44,11 +44,12 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
     public async Task Add_ShouldPersistSnapshot_Test()
     {
         // Arrange
+        var hash = Guid.NewGuid().ToString();
         var snapshot = BlockchainSnapshot.Create(
             BlockchainType.BitcoinMain,
             """{"name":"BTC.main"}""",
             height: 800_000,
-            hash: "abc123",
+            hash: hash,
             peerCount: 250,
             unconfirmedCount: 1000,
             DateTimeOffset.UtcNow);
@@ -65,7 +66,7 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
         persisted.BlockchainType.ShouldBe(BlockchainType.BitcoinMain);
         persisted.RawJson.ShouldBe("""{"name": "BTC.main"}""");
         persisted.Height.ShouldBe(800_000);
-        persisted.Hash.ShouldBe("abc123");
+        persisted.Hash.ShouldBe(hash);
         persisted.PeerCount.ShouldBe(250);
         persisted.UnconfirmedCount.ShouldBe(1000);
     }
@@ -74,11 +75,12 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
     public async Task Update_ShouldModifyExistingSnapshot()
     {
         // Arrange
+        var hash = Guid.NewGuid().ToString();
         var snapshot = BlockchainSnapshot.Create(
             BlockchainType.BitcoinMain,
             """{"name":"BTC.main"}""",
             height: 800_000,
-            hash: "abc123",
+            hash: hash,
             peerCount: 250,
             unconfirmedCount: 1000,
             DateTimeOffset.UtcNow);
@@ -86,7 +88,8 @@ public sealed class BlockchainSnapshotRepositoryTests : IAsyncLifetime
         await _dbContext.SaveChangesAsync(_cancellationToken);
 
         // Act
-        snapshot.Update(snapshot.RawJson, height: 101, peerCount: 55, unconfirmedCount: 210);
+        snapshot.Update(snapshot.RawJson, createdAt: DateTimeOffset.Now, height: 101, peerCount: 55,
+            unconfirmedCount: 210);
         _repository.Update(snapshot);
         await _dbContext.SaveChangesAsync(_cancellationToken);
 
