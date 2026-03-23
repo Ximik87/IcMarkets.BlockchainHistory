@@ -21,7 +21,7 @@ public sealed class BlockchainSnapshot
         BlockchainType blockchainType,       
         string rawJson,
         long? height,
-        string? hash,
+        string hash,
         int? peerCount,
         int? unconfirmedCount)
     {
