@@ -1,5 +1,4 @@
 using IcMarkets.BlockchainHistory.Application.DTOs;
-using IcMarkets.BlockchainHistory.Application.DTOs;
 using IcMarkets.BlockchainHistory.Application.Features.Blockchain.Queries.GetBlockchainHistory;
 using IcMarkets.BlockchainHistory.Application.Features.Blockchain.Queries.GetLatestBlockchainSnapshot;
 using IcMarkets.BlockchainHistory.Domain.Enums;
