@@ -29,41 +29,47 @@ public sealed class GetBlockchainHistoryQueryHandler
         CancellationToken cancellationToken)
     {
         var cacheKey = GetKey(query.BlockchainType, query.Time);
+        var dbTime = new DateTimeOffset(query.Time, TimeSpan.Zero);
 
-        if (_cache.TryGetValue(cacheKey, out IReadOnlyList<BlockchainSnapshotResponse>? cached) 
+        if (_cache.TryGetValue(cacheKey, out IReadOnlyList<BlockchainSnapshotResponse>? cached)
             && cached is not null)
         {
             return cached;
         }
 
-        var dbTime = new DateTimeOffset(query.Time, TimeSpan.Zero);
-
         await _lock.WaitAsync(cancellationToken);
 
-        // Double-check after acquiring the lock to prevent cache stampede
-        if (_cache.TryGetValue(cacheKey, out IReadOnlyList<BlockchainSnapshotResponse>? cached2) 
-            && cached2 is not null)
+        try
         {
-            return cached2;
+            // Double-check after acquiring the lock to prevent cache stampede
+            if (_cache.TryGetValue(cacheKey, out IReadOnlyList<BlockchainSnapshotResponse>? cached2)
+                && cached2 is not null)
+            {
+                return cached2;
+            }
+
+            var snapshots = await _repository.GetHistoryAsync(query.BlockchainType, dbTime, cancellationToken);
+
+            var responses = snapshots.Select(s => new BlockchainSnapshotResponse
+            {
+                Id = s.Id,
+                BlockchainType = s.BlockchainType.ToString(),
+                RawJson = s.RawJson,
+                CreatedAt = s.CreatedAt,
+                Height = s.Height,
+                Hash = s.Hash,
+                PeerCount = s.PeerCount,
+                UnconfirmedCount = s.UnconfirmedCount
+            }).ToList();
+
+            _cache.Set<IReadOnlyList<BlockchainSnapshotResponse>>(cacheKey, responses, CacheDuration);
+
+            return responses;
         }
-
-        var snapshots = await _repository.GetHistoryAsync(query.BlockchainType, dbTime, cancellationToken);
-
-        var responses = snapshots.Select(s => new BlockchainSnapshotResponse
+        finally
         {
-            Id = s.Id,
-            BlockchainType = s.BlockchainType.ToString(),
-            RawJson = s.RawJson,
-            CreatedAt = s.CreatedAt,
-            Height = s.Height,
-            Hash = s.Hash,
-            PeerCount = s.PeerCount,
-            UnconfirmedCount = s.UnconfirmedCount
-        }).ToList();
-
-        _cache.Set(cacheKey, (IReadOnlyList<BlockchainSnapshotResponse>)responses, CacheDuration);
-
-        return responses;
+            _lock.Release();
+        }
     }
 
     private static string GetKey(BlockchainType blockchainType, DateTime createdAt)
