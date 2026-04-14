@@ -39,23 +39,21 @@ public sealed class BlockchainDataPollingService : BackgroundService
 
     private async Task FetchAndStoreAllAsync(CancellationToken ct)
     {
-        using var scope = _scopeFactory.CreateScope();
-        var coordinator = scope.ServiceProvider.GetRequiredService<IBlockchainSnapshotSynchronizer>();
-
-        foreach (var blockchainType in _allBlockchainTypes)
+        await Parallel.ForEachAsync(_allBlockchainTypes, ct, async (blockchainType, ctInternal) =>
         {
             try
             {
-                await coordinator.FetchAndStoreAsync(blockchainType, ct);
+                using var scope = _scopeFactory.CreateScope();
+                var coordinator = scope.ServiceProvider.GetRequiredService<IBlockchainSnapshotSynchronizer>();
+                await coordinator.FetchAndStoreAsync(blockchainType, ctInternal);
                 _logger.LogInformation("Fetched {BlockchainType}", blockchainType);
-
                 // small delay because api have rate limits
-                await Task.Delay(800, ct);
+                await Task.Delay(800, ctInternal);
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Failed to fetch {BlockchainType}", blockchainType);
             }
-        }
+        });
     }
 }
