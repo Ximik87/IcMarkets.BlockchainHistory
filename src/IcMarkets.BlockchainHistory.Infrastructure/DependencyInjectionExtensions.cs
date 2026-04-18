@@ -26,7 +26,22 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<AppDbContext>());
 
         services.Configure<BlockCypherOptions>(configuration.GetSection("BlockCypher"));
-        services.AddHttpClient();
+
+        services.AddHttpClient(BlockCypherClient.HttpClientName)
+            .AddStandardResilienceHandler(options =>
+            {
+                options.Retry.MaxRetryAttempts = 3;
+                options.Retry.Delay = TimeSpan.FromMilliseconds(500);
+
+                options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(30);
+                options.CircuitBreaker.FailureRatio = 0.5;
+                options.CircuitBreaker.MinimumThroughput = 5;
+                options.CircuitBreaker.BreakDuration = TimeSpan.FromSeconds(15);
+
+                options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(5);
+                options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(30);
+            });
+
         services.AddTransient<IBlockCypherClient, BlockCypherClient>();
         services.AddMediator(opt => opt.ServiceLifetime = ServiceLifetime.Scoped);
         services.AddTransient(typeof(Mediator.IPipelineBehavior<,>), typeof(ValidationBehavior<,>));

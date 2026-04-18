@@ -13,7 +13,7 @@ public sealed class BlockCypherClientTests
     {
         // Arrange
         var clientFactory = new Mock<IHttpClientFactory>();
-        clientFactory.Setup(x => x.CreateClient(""))
+        clientFactory.Setup(x => x.CreateClient(BlockCypherClient.HttpClientName))
             .Returns(() => new HttpClient());
         var options = Options.Create(new BlockCypherOptions
         {

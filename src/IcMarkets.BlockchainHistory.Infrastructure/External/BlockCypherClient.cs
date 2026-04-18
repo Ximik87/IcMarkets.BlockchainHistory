@@ -2,13 +2,15 @@
 using System.Net.Http.Json;
 using IcMarkets.BlockchainHistory.Application.Abstractions.External;
 using IcMarkets.BlockchainHistory.Application.DTOs;
-using IcMarkets.BlockchainHistory.Domain.Enums;
+using IcMarkets.BlockchainHistory.Domain.Enums; 
 using Microsoft.Extensions.Options;
 
 namespace IcMarkets.BlockchainHistory.Infrastructure.External;
 
 internal sealed class BlockCypherClient : IBlockCypherClient
 {
+    public const string HttpClientName = "BlockCypher";
+
     private readonly IHttpClientFactory _factory;
     private readonly BlockCypherOptions _options;
 
@@ -21,7 +23,7 @@ internal sealed class BlockCypherClient : IBlockCypherClient
     public async Task<Blockchain> GetAsync(BlockchainType blockchainType, CancellationToken ct)
     {
         var url = GetUrl(blockchainType);
-        using var client = _factory.CreateClient();
+        using var client = _factory.CreateClient(HttpClientName);
         var response = await client.GetFromJsonAsync<BlockchainResponse>(url, ct);
 
         var blockchain = new Blockchain
